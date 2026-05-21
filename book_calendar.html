@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tomato Book Calendar</title>
+<title>Cinema Calendar</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
 <style>
@@ -28,14 +28,14 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --red: #e8392a;
-  --red-light: #ff6b5b;
-  --red-pale: #fff0ee;
-  --red-mid: #ffd5d0;
+  --red: #111111;
+  --red-light: #333333;
+  --red-pale: #f5f5f5;
+  --red-mid: #dddddd;
   --green: #4a7c3f;
-  --cream: #fffaf9;
-  --text: #3a1a16;
-  --text-sub: #9b6b65;
+  --cream: #ffffff;
+  --text: #111111;
+  --text-sub: #888888;
 }
 
 body {
@@ -50,10 +50,10 @@ body {
 .widget {
   width: 100%;
   max-width: 340px;
-  background: var(--cream);
+  background: #ffffff;
   border-radius: 20px;
   overflow: hidden;
-  outline: 2px solid rgba(232,57,42,0.2);
+  outline: 2px solid rgba(0,0,0,0.12);
 }
 
 /* 헤더 */
@@ -78,11 +78,9 @@ body {
   font-weight: 900;
   color: #fff;
   font-family: 'NanumSquareRound', 'Nanum Gothic', sans-serif;
-  text-shadow: -1px -1px 0 rgba(200,50,30,0.4), 1px -1px 0 rgba(200,50,30,0.4), -1px 1px 0 rgba(200,50,30,0.4), 1px 1px 0 rgba(200,50,30,0.4), 0 2px 4px rgba(0,0,0,0.2);
   letter-spacing: 1px;
   text-align: center;
   line-height: 1;
-  -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
 }
 .header-nav-row {
   display: flex;
@@ -128,7 +126,6 @@ body {
   font-weight: 900;
   color: #fff;
   font-family: 'NanumSquareRound', 'Nanum Gothic', sans-serif;
-  text-shadow: -1px -1px 0 rgba(200,50,30,0.3), 1px 1px 0 rgba(200,50,30,0.3), 0 2px 4px rgba(0,0,0,0.2);
   min-width: 52px;
   text-align: center;
   letter-spacing: 0.5px;
@@ -145,11 +142,11 @@ body {
   text-align: center;
   font-size: 11px;
   font-weight: 900;
-  color: var(--text-sub);
+  color: #888888;
   letter-spacing: 0.5px;
   padding-bottom: 4px;
 }
-.weekday:first-child { color: var(--red); }
+.weekday:first-child { color: #111111; }
 .weekday:last-child { color: #6b9bd1; }
 
 /* 달력 그리드 */
@@ -157,15 +154,15 @@ body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0;
-  border-left: 1px solid rgba(232,57,42,0.15);
-  border-top: 1px solid rgba(232,57,42,0.15);
+  border-left: 1px solid #dddddd;
+  border-top: 1px solid #dddddd;
   margin: 0 12px 10px;
 }
 .day-cell {
   position: relative;
   aspect-ratio: 1 / 1.3;
-  border-right: 1px solid rgba(232,57,42,0.15);
-  border-bottom: 1px solid rgba(232,57,42,0.15);
+  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
   overflow: hidden;
 }
 .day-cell.has-book {
@@ -177,7 +174,7 @@ body {
 .day-num {
   font-size: 9px;
   font-weight: 900;
-  color: var(--text-sub);
+  color: #888888;
   line-height: 1;
   position: absolute;
   top: 3px;
@@ -192,7 +189,7 @@ body {
 .day-cell.today:not(.has-book) .day-num {
   display: block !important;
   color: #fff;
-  background: var(--red);
+  background: #e50914;
   border-radius: 50%;
   width: 16px; height: 16px;
   line-height: 16px;
@@ -206,7 +203,7 @@ body {
 .day-cell.today.has-book .day-num {
   display: none !important;
 }
-.day-cell.sunday .day-num { color: var(--red); }
+.day-cell.sunday .day-num { color: #e50914; }
 .day-cell.saturday .day-num { color: #6b9bd1; }
 .day-cell.other-month .day-num { color: rgba(58,26,22,0.25); }
 
@@ -242,17 +239,17 @@ body {
 .cover-placeholder-sm {
   width: 32px; height: 40px;
   border-radius: 3px;
-  background: linear-gradient(135deg, var(--red-pale), var(--red-mid));
+  background: linear-gradient(135deg, #f5f5f5, #dddddd);
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
-  border: 1px solid var(--red-mid);
+  border: 1px solid #dddddd;
 }
 
 /* 로딩 */
 .loading-state {
   text-align: center;
   padding: 32px 16px;
-  color: var(--text-sub);
+  color: #888888;
   font-size: 13px;
 }
 .loading-row { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
@@ -266,7 +263,7 @@ body {
   display: none;
   gap: 6px;
   font-size: 11px;
-  color: var(--text-sub);
+  color: #ffffff;
 }
 
 /* 팝업 */
@@ -288,9 +285,9 @@ body {
   pointer-events: all;
 }
 .popup {
-  background: var(--cream);
+  background: #ffffff;
   border-radius: 20px;
-  outline: 2px solid rgba(232,57,42,0.2);
+  outline: 2px solid rgba(0,0,0,0.12);
   max-width: 280px;
   width: 100%;
   overflow: hidden;
@@ -301,7 +298,7 @@ body {
   transform: scale(1) translateY(0);
 }
 .popup-header {
-  background: var(--red);
+  background: #111111;
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -336,7 +333,7 @@ body {
   gap: 12px;
   align-items: flex-start;
   padding-bottom: 12px;
-  border-bottom: 1px dashed rgba(232,57,42,0.15);
+  border-bottom: 1px solid #dddddd;
 }
 .popup-book:last-child { border-bottom: none; padding-bottom: 0; }
 .popup-cover {
@@ -346,16 +343,16 @@ body {
   border-radius: 6px;
   flex-shrink: 0;
   box-shadow: 2px 3px 8px rgba(232,57,42,0.2);
-  border: 1.5px solid var(--red-mid);
+  border: 1.5px solid #dddddd;
 }
 .popup-cover-placeholder {
   width: 52px; height: 72px;
   border-radius: 6px;
-  background: linear-gradient(135deg, var(--red-pale), var(--red-mid));
+  background: linear-gradient(135deg, #f5f5f5, #dddddd);
   display: flex; align-items: center; justify-content: center;
   font-size: 24px;
   flex-shrink: 0;
-  border: 1.5px solid var(--red-mid);
+  border: 1.5px solid #dddddd;
 }
 .popup-info { flex: 1; min-width: 0; }
 .popup-title {
@@ -367,21 +364,21 @@ body {
 }
 .popup-meta {
   font-size: 11px;
-  color: var(--text-sub);
+  color: #888888;
   line-height: 1.6;
 }
 .popup-tag {
   display: inline-block;
-  background: var(--red-pale);
-  color: var(--red);
+  background: #f5f5f5;
+  color: #111111;
   border-radius: 6px;
   padding: 2px 7px;
   font-size: 10px;
   font-weight: 700;
   margin-top: 4px;
 }
-.popup-tag.finish { background: var(--red-pale); color: var(--red); }
-.popup-tag.reading { background: var(--red-pale); color: var(--red); }
+.popup-tag.finish { background: #f5f5f5; color: #111111; }
+.popup-tag.reading { background: #f5f5f5; color: #111111; }
 </style>
 </head>
 <body>
@@ -391,18 +388,18 @@ body {
     <svg width="100%" height="80" viewBox="0 0 340 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="gridCheck" patternUnits="userSpaceOnUse" width="14" height="14">
-          <rect width="14" height="14" fill="#e8392a"/>
-          <line x1="0" y1="0" x2="14" y2="0" stroke="rgba(255,180,170,0.5)" stroke-width="1.5"/>
-          <line x1="0" y1="0" x2="0" y2="14" stroke="rgba(255,180,170,0.5)" stroke-width="1.5"/>
-          <line x1="0" y1="14" x2="14" y2="14" stroke="rgba(255,180,170,0.5)" stroke-width="1.5"/>
-          <line x1="14" y1="0" x2="14" y2="14" stroke="rgba(255,180,170,0.5)" stroke-width="1.5"/>
+          <rect width="14" height="14" fill="#111111"/>
+          <line x1="0" y1="0" x2="14" y2="0" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <line x1="0" y1="0" x2="0" y2="14" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <line x1="0" y1="14" x2="14" y2="14" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <line x1="14" y1="0" x2="14" y2="14" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
         </pattern>
       </defs>
       <rect width="340" height="70" fill="url(#gridCheck)"/>
-      <path d="M0,62 Q8.5,54 17,62 Q25.5,70 34,62 Q42.5,54 51,62 Q59.5,70 68,62 Q76.5,54 85,62 Q93.5,70 102,62 Q110.5,54 119,62 Q127.5,70 136,62 Q144.5,54 153,62 Q161.5,70 170,62 Q178.5,54 187,62 Q195.5,70 204,62 Q212.5,54 221,62 Q229.5,70 238,62 Q246.5,54 255,62 Q263.5,70 272,62 Q280.5,54 289,62 Q297.5,70 306,62 Q314.5,54 323,62 Q331.5,70 340,62 L340,80 L0,80 Z" fill="#fffaf9"/>
+      <path d="M0,62 Q8.5,54 17,62 Q25.5,70 34,62 Q42.5,54 51,62 Q59.5,70 68,62 Q76.5,54 85,62 Q93.5,70 102,62 Q110.5,54 119,62 Q127.5,70 136,62 Q144.5,54 153,62 Q161.5,70 170,62 Q178.5,54 187,62 Q195.5,70 204,62 Q212.5,54 221,62 Q229.5,70 238,62 Q246.5,54 255,62 Q263.5,70 272,62 Q280.5,54 289,62 Q297.5,70 306,62 Q314.5,54 323,62 Q331.5,70 340,62 L340,80 L0,80 Z" fill="#ffffff"/>
     </svg>
     <div class="header-content">
-      <div class="header-title">Tomato Book Calendar</div>
+      <div class="header-title">Cinema Calendar</div>
       <div class="header-nav-row">
         <button class="nav-btn" onclick="changeMonth(-1)">&lt;</button>
         <span class="month-label" id="monthLabel"></span>
@@ -413,7 +410,7 @@ body {
   </div>
 
   <div class="weekdays">
-    <div class="weekday">일</div>
+    <div class="weekday" style="color:#e50914;">일</div>
     <div class="weekday">월</div>
     <div class="weekday">화</div>
     <div class="weekday">수</div>
@@ -424,11 +421,11 @@ body {
 
   <div class="calendar-grid" id="calendarGrid">
     <div class="loading-state" style="grid-column:1/-1">
-      🍅 불러오는 중...
+      🍿 불러오는 중...
       <div class="loading-row">
-        <span class="loading-tomato">🍅</span>
-        <span class="loading-tomato">🍅</span>
-        <span class="loading-tomato">🍅</span>
+        <span class="loading-tomato">🍿</span>
+        <span class="loading-tomato">🍿</span>
+        <span class="loading-tomato">🍿</span>
       </div>
     </div>
   </div>
@@ -459,7 +456,7 @@ currentMonth = today.getMonth();
 
 async function fetchBooks() {
   try {
-    const res = await fetch('/api/notion?db_id=d000bfb4f30783339a7081544b25ebae&token=ntn_l32163069516Up1A2Rf37txdXOzscWrGbvrhjTZ8394bbO', {
+    const res = await fetch('/api/notion?db_id=3600bfb4f307809f95a6c3a7ce6d02cb&token=ntn_b3216306951YzmRI3CPflCni2GuF26uBlZ22YHg5pBgd4Z', {
       method: 'GET'
     });
     const data = await res.json();
@@ -475,7 +472,7 @@ async function fetchBooks() {
       // 날짜 범위 내 모든 날짜 생성
       const finishDates = finishDateStart ? getDateRange(finishDateStart, finishDateEnd) : [];
       const finishDate = finishDateStart;
-      const coverFiles = props['표지']?.files || props['cover']?.files || [];
+      const coverFiles = props['포스터']?.files || props['cover']?.files || [];
       let coverUrl = '';
       if (coverFiles.length > 0) {
         const f = coverFiles[0];
@@ -633,6 +630,8 @@ function refreshCalendar() {
     setTimeout(() => btn.classList.remove('spinning'), 500);
   });
 }
+
+fetchBooks();
 </script>
 </body>
 </html>
