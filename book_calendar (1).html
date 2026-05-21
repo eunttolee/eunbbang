@@ -26,7 +26,7 @@
 </style>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
 :root {
   --red: #e8392a;
   --red-light: #ff6b5b;
@@ -37,7 +37,7 @@
   --text: #3a1a16;
   --text-sub: #9b6b65;
 }
-
+ 
 body {
   font-family: 'NanumSquareRound', 'Nanum Gothic', sans-serif;
   background: transparent;
@@ -46,7 +46,7 @@ body {
   justify-content: center;
   padding: 16px 12px;
 }
-
+ 
 .widget {
   width: 100%;
   max-width: 340px;
@@ -55,7 +55,7 @@ body {
   overflow: hidden;
   outline: 2px solid rgba(232,57,42,0.2);
 }
-
+ 
 /* 헤더 */
 .widget-header {
   position: relative;
@@ -116,7 +116,7 @@ body {
   text-align: center;
   letter-spacing: 0.5px;
 }
-
+ 
 /* 요일 헤더 */
 .weekdays {
   display: grid;
@@ -134,7 +134,7 @@ body {
 }
 .weekday:first-child { color: var(--red); }
 .weekday:last-child { color: #6b9bd1; }
-
+ 
 /* 달력 그리드 */
 .calendar-grid {
   display: grid;
@@ -192,7 +192,7 @@ body {
 .day-cell.sunday .day-num { color: var(--red); }
 .day-cell.saturday .day-num { color: #6b9bd1; }
 .day-cell.other-month .day-num { color: rgba(58,26,22,0.25); }
-
+ 
 .covers-wrap {
   position: absolute;
   top: 0; left: 0;
@@ -230,7 +230,7 @@ body {
   font-size: 14px;
   border: 1px solid var(--red-mid);
 }
-
+ 
 /* 로딩 */
 .loading-state {
   text-align: center;
@@ -243,7 +243,7 @@ body {
 .loading-tomato:nth-child(2){animation-delay:0.2s}
 .loading-tomato:nth-child(3){animation-delay:0.4s}
 @keyframes pop{0%,80%,100%{transform:scale(0.7);opacity:0.4}40%{transform:scale(1.1);opacity:1}}
-
+ 
 /* 푸터 */
 .widget-footer-unused {
   display: none;
@@ -251,7 +251,7 @@ body {
   font-size: 11px;
   color: var(--text-sub);
 }
-
+ 
 /* 팝업 */
 .popup-overlay {
   position: fixed;
@@ -368,7 +368,7 @@ body {
 </style>
 </head>
 <body>
-
+ 
 <div class="widget">
   <div class="widget-header">
     <svg width="100%" height="80" viewBox="0 0 340 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -393,7 +393,7 @@ body {
       </div>
     </div>
   </div>
-
+ 
   <div class="weekdays">
     <div class="weekday">일</div>
     <div class="weekday">월</div>
@@ -403,7 +403,7 @@ body {
     <div class="weekday">금</div>
     <div class="weekday">토</div>
   </div>
-
+ 
   <div class="calendar-grid" id="calendarGrid">
     <div class="loading-state" style="grid-column:1/-1">
       🍅 불러오는 중...
@@ -414,9 +414,9 @@ body {
       </div>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- 팝업 -->
 <div class="popup-overlay" id="popupOverlay" onclick="closePopup(event)">
   <div class="popup" id="popup">
@@ -427,18 +427,18 @@ body {
     <div class="popup-body" id="popupBody"></div>
   </div>
 </div>
-
+ 
 <script>
-const NOTION_TOKEN = 'ntn_i32163069517ambmcoQSZP8YjoGDD3aIt7uS8iZefaIdJD';
-const DB_ID = '3600bfb4f307809f95a6c3a7ce6d02cb';
-
+const NOTION_TOKEN = 'ntn_l32163069516Up1A2Rf37txdXOzscWrGbvrhjTZ8394bbO';
+const DB_ID = 'd000bfb4f30783339a7081544b25ebae';
+ 
 let currentYear, currentMonth;
 let allBooks = [];
-
+ 
 const today = new Date();
 currentYear = today.getFullYear();
 currentMonth = today.getMonth();
-
+ 
 async function fetchBooks() {
   try {
     const res = await fetch('https://hook.eu1.make.com/6o4lko885edvkzgznku2d5uki3ntcq5v', {
@@ -472,7 +472,7 @@ async function fetchBooks() {
     document.getElementById('calendarGrid').innerHTML = `<div class="loading-state" style="grid-column:1/-1">😢 불러오기 실패<br><span style="font-size:11px">잠시 후 다시 시도해주세요</span></div>`;
   }
 }
-
+ 
 function getDateRange(start, end) {
   const dates = [];
   const cur = new Date(start);
@@ -483,28 +483,28 @@ function getDateRange(start, end) {
   }
   return dates;
 }
-
+ 
 function getBooksForDate(dateStr) {
   return allBooks.filter(b => 
     (b.finishDates && b.finishDates.includes(dateStr)) ||
     b.startDate === dateStr
   );
 }
-
+ 
 function renderCalendar() {
   const grid = document.getElementById('calendarGrid');
   const label = document.getElementById('monthLabel');
   label.textContent = `${currentYear}.${String(currentMonth+1).padStart(2,'0')}`;
-
+ 
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
   const daysInPrev = new Date(currentYear, currentMonth, 0).getDate();
-
+ 
   const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
+ 
   let html = '';
   let totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
-
+ 
   for (let i = 0; i < totalCells; i++) {
     let day, month, year, isOther = false;
     if (i < firstDay) {
@@ -522,21 +522,21 @@ function renderCalendar() {
       month = currentMonth;
       year = currentYear;
     }
-
+ 
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const books = isOther ? [] : getBooksForDate(dateStr);
     const isToday = dateStr === todayStr;
     const dow = i % 7;
     const isSun = dow === 0;
     const isSat = dow === 6;
-
+ 
     let classes = 'day-cell';
     if (isOther) classes += ' other-month';
     if (isToday) classes += ' today';
     if (isSun && !isOther) classes += ' sunday';
     if (isSat && !isOther) classes += ' saturday';
     if (books.length > 0) classes += ' has-book';
-
+ 
     let coversHtml = '';
     if (books.length > 0) {
       coversHtml = `<div class="covers-wrap">`;
@@ -549,23 +549,23 @@ function renderCalendar() {
       });
       coversHtml += `</div>`;
     }
-
+ 
     html += `<div class="${classes}" ${books.length > 0 ? `onclick="showPopup('${dateStr}')"` : ''}>
       <span class="day-num">${day}</span>
       ${coversHtml}
     </div>`;
   }
-
+ 
   grid.innerHTML = html;
 }
-
+ 
 function showPopup(dateStr) {
   const books = getBooksForDate(dateStr);
   if (!books.length) return;
-
+ 
   const [y, m, d] = dateStr.split('-');
   document.getElementById('popupDate').textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
-
+ 
   let html = '';
   books.forEach(b => {
     const isFinish = b.finishDate === dateStr;
@@ -586,28 +586,28 @@ function showPopup(dateStr) {
       </div>
     </div>`;
   });
-
+ 
   document.getElementById('popupBody').innerHTML = html;
   document.getElementById('popupOverlay').classList.add('show');
 }
-
+ 
 function closePopup(e) {
   if (e.target === document.getElementById('popupOverlay')) {
     document.getElementById('popupOverlay').classList.remove('show');
   }
 }
-
+ 
 function closePopupDirect() {
   document.getElementById('popupOverlay').classList.remove('show');
 }
-
+ 
 function changeMonth(delta) {
   currentMonth += delta;
   if (currentMonth > 11) { currentMonth = 0; currentYear++; }
   if (currentMonth < 0) { currentMonth = 11; currentYear--; }
   renderCalendar();
 }
-
+ 
 fetchBooks();
 </script>
 </body>
