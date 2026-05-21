@@ -126,7 +126,6 @@ body {
   font-weight: 900;
   color: #fff;
   font-family: 'NanumSquareRound', 'Nanum Gothic', sans-serif;
-  text-shadow: -1px -1px 0 rgba(200,50,30,0.3), 1px 1px 0 rgba(200,50,30,0.3), 0 2px 4px rgba(0,0,0,0.2);
   min-width: 52px;
   text-align: center;
   letter-spacing: 0.5px;
@@ -155,15 +154,15 @@ body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0;
-  border-left: 1px solid rgba(232,57,42,0.15);
-  border-top: 1px solid rgba(232,57,42,0.15);
+  border-left: 1px solid #dddddd;
+  border-top: 1px solid #dddddd;
   margin: 0 12px 10px;
 }
 .day-cell {
   position: relative;
   aspect-ratio: 1 / 1.3;
-  border-right: 1px solid rgba(232,57,42,0.15);
-  border-bottom: 1px solid rgba(232,57,42,0.15);
+  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
   overflow: hidden;
 }
 .day-cell.has-book {
@@ -204,7 +203,7 @@ body {
 .day-cell.today.has-book .day-num {
   display: none !important;
 }
-.day-cell.sunday .day-num { color: #111111; }
+.day-cell.sunday .day-num { color: #e50914; }
 .day-cell.saturday .day-num { color: #6b9bd1; }
 .day-cell.other-month .day-num { color: rgba(58,26,22,0.25); }
 
@@ -243,7 +242,7 @@ body {
   background: linear-gradient(135deg, #f5f5f5, #dddddd);
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
-  border: 1px solid var(--red-mid);
+  border: 1px solid #dddddd;
 }
 
 /* 로딩 */
@@ -334,7 +333,7 @@ body {
   gap: 12px;
   align-items: flex-start;
   padding-bottom: 12px;
-  border-bottom: 1px dashed rgba(232,57,42,0.15);
+  border-bottom: 1px solid #dddddd;
 }
 .popup-book:last-child { border-bottom: none; padding-bottom: 0; }
 .popup-cover {
@@ -411,7 +410,7 @@ body {
   </div>
 
   <div class="weekdays">
-    <div class="weekday">일</div>
+    <div class="weekday" style="color:#e50914;">일</div>
     <div class="weekday">월</div>
     <div class="weekday">화</div>
     <div class="weekday">수</div>
@@ -464,12 +463,12 @@ async function fetchBooks() {
     allBooks = (data.results || []).map(page => {
       const props = page.properties;
       const title = props['이름']?.title?.[0]?.plain_text || props['제목']?.title?.[0]?.plain_text || props['title']?.title?.[0]?.plain_text || '제목 없음';
-      const author = props['저자']?.rich_text?.[0]?.plain_text || props['author']?.rich_text?.[0]?.plain_text || '';
-      const publisher = props['출판사']?.rich_text?.[0]?.plain_text || '';
-      const status = props['읽기 상태']?.select?.name || props['상태']?.select?.name || '';
-      const finishDateStart = props['완독한 날짜']?.date?.start || null;
-      const finishDateEnd = props['완독한 날짜']?.date?.end || finishDateStart;
-      const startDate = props['읽기 시작한 날짜']?.date?.start || props['읽기 시작']?.date?.start || null;
+      const author = props['영화/드라마']?.multi_select?.map(s => s.name).join(', ') || '';
+      const publisher = props['한 줄 소감']?.rich_text?.[0]?.plain_text || '';
+      const status = props['상태']?.select?.name || '';
+      const finishDateStart = props['시청일']?.date?.start || null;
+      const finishDateEnd = props['시청일']?.date?.end || finishDateStart;
+      const startDate = props['개봉']?.date?.start || null;
       // 날짜 범위 내 모든 날짜 생성
       const finishDates = finishDateStart ? getDateRange(finishDateStart, finishDateEnd) : [];
       const finishDate = finishDateStart;
@@ -583,18 +582,18 @@ function showPopup(dateStr) {
   let html = '';
   books.forEach(b => {
     const isFinish = b.finishDate === dateStr;
-    const tagLabel = isFinish ? '완독' : '시작';
+    const tagLabel = isFinish ? '시청완료' : '개봉일';
     const tagClass = isFinish ? 'finish' : 'reading';
     html += `<div class="popup-book">
       ${b.coverUrl
         ? `<img class="popup-cover" src="${b.coverUrl}" alt="${b.title}">`
-        : `<div class="popup-cover-placeholder">📖</div>`
+        : `<div class="popup-cover-placeholder">🎬</div>`
       }
       <div class="popup-info">
         <div class="popup-title">${b.title}</div>
         <div class="popup-meta">
-          ${b.author ? `✍️ ${b.author}<br>` : ''}
-          ${b.publisher ? `📚 ${b.publisher}` : ''}
+          ${b.author ? `🎭 ${b.author}<br>` : ''}
+          ${b.publisher ? `💬 ${b.publisher}` : ''}
         </div>
         <span class="popup-tag ${tagClass}">${tagLabel}</span>
       </div>
