@@ -54,7 +54,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ── 헤더 (정렬 수정) ── */
+/* ── 헤더 ── */
 .cal-header {
   background: #ff7eb3;
   padding: 16px 18px 26px;
@@ -71,14 +71,14 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
-  justify-content: center; /* 화살표와 월 표시 정중앙 정렬 */
+  justify-content: center;
   position: relative;
   z-index: 1;
 }
 .nav-group {
   display: flex;
   align-items: center;
-  gap: 8px; /* 하단 바와 유사한 촘촘한 정렬 간격 */
+  gap: 8px;
 }
 .nav-btn {
   width: 26px; height: 26px;
@@ -94,7 +94,6 @@ body {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.45); }
 
-/* [수정] 오른쪽 화살표 옆에 예쁜 간격으로 붙은 하트 버튼 */
 .nav-heart-btn {
   width: 26px; height: 26px;
   border-radius: 50%;
@@ -140,12 +139,7 @@ body {
   border-radius: 10px;
   transition: background 0.12s;
 }
-
-/* 마우스 올렸을 때 핑크색 채움 효과 */
-.day-cell:hover { background: var(--pink-soft); }
-
-/* [수정] 날짜를 클릭했을 때도 하트 대신 마우스 올린 것처럼 핑크색 색 채움으로 표시 */
-.day-cell.selected { background: var(--pink-soft); }
+.day-cell:hover, .day-cell.selected { background: var(--pink-soft); }
 
 .day-num {
   width: 30px; height: 30px;
@@ -160,7 +154,7 @@ body {
 .day-cell.sun .day-num  { color: #e8392a; }
 .day-cell.sat .day-num  { color: #5aabdb; }
 
-/* 오늘 기본 마킹 */
+/* 오늘 */
 .day-cell.today:not(.has-event) .day-num {
   background: #ff7eb3;
   color: #fff !important;
@@ -168,7 +162,7 @@ body {
   border-radius: 50%;
 }
 
-/* 일정이 저장된 날짜 하트 폰트 효과 */
+/* 일정이 저장된 날짜 하트 스타일 */
 .day-cell.has-event .day-num {
   color: #ff7eb3 !important;
   font-weight: 900;
@@ -188,8 +182,12 @@ body {
   z-index: -1;
   pointer-events: none;
 }
+.day-cell.has-event.today .day-num {
+  outline: 2.5px solid #ff7eb3;
+  outline-offset: 2px;
+}
 
-/* [복구] 이벤트 도트 열 스타일 및 위치 재설정 */
+/* 이벤트 도트 */
 .event-dot-row {
   display: flex; gap: 2px;
   justify-content: center;
@@ -200,12 +198,12 @@ body {
 }
 .e-dot { width: 4px; height: 4px; border-radius: 50%; }
 
-/* 공휴일 및 대체공휴일 스타일 */
+/* 공휴일 */
 .day-cell.holiday .day-num { color: #e8392a !important; font-weight: 900; }
 .day-cell.holiday.other-month .day-num { color: var(--text-other) !important; }
 .holiday-dot { width: 4px; height: 4px; border-radius: 50%; background: #e8392a; }
 
-/* ── 하단 바 ── */
+/* 하단 바 */
 .bottom-bar {
   display: flex; align-items: center; justify-content: flex-end;
   padding: 6px 14px 14px; gap: 8px;
@@ -234,14 +232,14 @@ body {
 }
 .add-fab:hover { transform: scale(1.1); }
 
-/* ── 툴팁 (삭제 및 정보 표시) ── */
+/* ── 단순 확인용 마우스 호버 툴팁 (삭제버튼 없음, 마우스 나가면 즉시 소멸) ── */
 .tooltip {
   display: none; position: fixed; z-index: 9999;
   background: #fff; border-radius: 14px; padding: 10px 14px;
   box-shadow: 0 6px 24px rgba(255,126,179,0.15);
   min-width: 160px; max-width: 240px;
   border: 1.5px solid rgba(255,126,179,0.2);
-  pointer-events: auto;
+  pointer-events: none; /* 확인용이므로 마우스 간섭 방지 */
 }
 .tooltip.show { display: block; }
 .tooltip-date { font-size: 10px; font-weight: 900; color: var(--pink-dark); margin-bottom: 6px; }
@@ -254,17 +252,37 @@ body {
 .t-title { font-weight: 700; color: var(--text); }
 .t-meta { font-size: 10px; color: var(--text-sub); font-weight: 400; }
 
-.t-delete-btn {
-  background: none; border: none; color: #ccc; font-size: 12px; cursor: pointer; padding: 0 4px; font-weight: 900; transition: all 0.1s;
+/* ── [새로 구현] 일정을 누르면 중앙에 뜨는 "일정 관리/삭제 팝업" 오버레이 스타일 ── */
+.manage-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.15); align-items: center; justify-content: center;
 }
-.t-delete-btn:hover { color: #e8392a; }
+.manage-overlay.show { display: flex; }
+.manage-popup {
+  width: 280px; background: #fff; border-radius: 24px; padding: 22px 18px; box-shadow: 0 12px 36px rgba(180,60,130,0.2); border: 1.5px solid rgba(255,126,179,0.2); animation: mPop 0.2s ease-out;
+}
+@keyframes mPop { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.manage-title { font-size: 14px; font-weight: 900; color: var(--text); text-align: center; margin-bottom: 4px; }
+.manage-date { font-size: 11px; font-weight: 700; color: var(--text-sub); text-align: center; margin-bottom: 16px; }
+.manage-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
+.manage-item {
+  display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--cream); border-radius: 12px; border: 1px solid rgba(255,126,179,0.1); gap: 6px;
+}
+.m-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.m-title { font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-meta { font-size: 10px; color: var(--text-sub); }
+.btn-m-del {
+  padding: 4px 10px; background: var(--pink-soft); color: var(--pink-dark); border: none; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; font-family: inherit; transition: all 0.1s;
+}
+.btn-m-del:hover { background: #ff7eb3; color: #fff; }
+.btn-m-close {
+  width: 100%; margin-top: 16px; padding: 9px; background: #ff7eb3; color: #fff; border: none; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer; font-family: inherit; box-shadow: 0 3px 10px rgba(255,126,179,0.25);
+}
 
-/* ── 팝업 오버레이 ── */
+/* 일정 추가 오버레이 */
 .overlay {
   display: none; position: fixed; inset: 0; z-index: 100; background: rgba(180,60,130,0.03); backdrop-filter: blur(1px); align-items: center; justify-content: center;
 }
 .overlay.show { display: flex; }
-
 @media (min-width: 660px) {
   .overlay { justify-content: flex-start; padding-left: 350px; }
 }
@@ -293,12 +311,8 @@ body {
   display: none; position: absolute; top: 52px; left: 18px; right: 18px; background: #fff; border: 1.5px solid var(--pink); border-radius: 14px; box-shadow: 0 6px 20px rgba(255,126,179,0.2); z-index: 10; padding: 8px; gap: 8px; grid-template-columns: 1fr 1fr;
 }
 .time-dropdown.show { display: grid; }
-.time-scroll-col {
-  height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px;
-}
-.time-cell-item {
-  padding: 6px; font-size: 12px; text-align: center; border-radius: 6px; cursor: pointer; color: var(--text); font-weight: 700;
-}
+.time-scroll-col { height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.time-cell-item { padding: 6px; font-size: 12px; text-align: center; border-radius: 6px; cursor: pointer; color: var(--text); font-weight: 700; }
 .time-cell-item:hover { background: var(--pink-soft); }
 .time-cell-item.active { background: #ff7eb3; color: #fff; }
 
@@ -323,7 +337,7 @@ body {
 .btn-cancel { flex: 1; padding: 9px; background: var(--pink-soft); color: var(--pink-dark); border: none; border-radius: 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .btn-save { flex: 2; padding: 9px; background: #ff7eb3; color: #fff; border: none; border-radius: 11px; font-size: 12px; font-weight: 900; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(255,126,179,0.3); }
 
-/* 빈 날짜 중앙 팝업 */
+/* 빈 날짜 중앙 알림 */
 .empty-overlay {
   display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.12); align-items: center; justify-content: center;
 }
@@ -367,12 +381,21 @@ body {
     <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()" title="새로고침">↻</button>
   </div>
 
-  <button class="add-fab" onclick="openPopup()" title="일정 추가">+</button>
+  <button class="add-fab" onclick="openPopupFAB()" title="일정 추가">+</button>
 </div>
 
-<div class="tooltip" id="tooltip" onmouseenter="clearTipTimer()" onmouseleave="hideTip()">
+<div class="tooltip" id="tooltip">
   <div class="tooltip-date" id="tipDate"></div>
   <div id="tipItems"></div>
+</div>
+
+<div class="manage-overlay" id="manageOverlay" onclick="closeManageOnBg(event)">
+  <div class="manage-popup">
+    <div class="manage-title">일정 관리 🍅</div>
+    <div class="manage-date" id="mPopupDateLabel">날짜</div>
+    <div class="manage-list" id="mPopupList"></div>
+    <button class="btn-m-close" onclick="closeManagePopup()">닫기</button>
+  </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="closeOnBg(event)">
@@ -444,7 +467,6 @@ let pickedCat   = '약속';
 let selectedDate = '';
 let selHour = '12';
 let selMin = '00';
-let tipTimer = null;
 const today = new Date();
 
 const HOLIDAYS = {
@@ -489,7 +511,7 @@ function initCustomTimePicker() {
   hourCol.innerHTML = hHtml; minCol.innerHTML = mHtml; updateTimeDisplay();
 }
 
-function toggleTimeDropdown(e) { e.stopPropagation(); document.getElementById('timeDropdown').classList.toggle('show'); }
+function toggleTimeDropdown(event) { event.stopPropagation(); document.getElementById('timeDropdown').classList.toggle('show'); }
 function selectHour(h, el) { selHour = h; document.querySelectorAll('#hourCol .time-cell-item').forEach(c => c.classList.remove('active')); el.classList.add('active'); updateTimeDisplay(); }
 function selectMin(m, el) { selMin = m; document.querySelectorAll('#minCol .time-cell-item').forEach(c => c.classList.remove('active')); el.classList.add('active'); updateTimeDisplay(); document.getElementById('timeDropdown').classList.remove('show'); }
 function updateTimeDisplay() { document.getElementById('timeDisplay').textContent = `${selHour}:${selMin}`; }
@@ -502,16 +524,75 @@ function openPopup() {
   document.getElementById('inTitle').value = ''; selHour = '12'; selMin = '00';
   initCustomTimePicker(); document.getElementById('overlay').classList.add('show');
 }
+function openPopupFAB() {
+  if (!selectedDate) { alert('날짜를 먼저 선택해 주세요! 🍅'); return; }
+  openPopup();
+}
 function closePopup() { document.getElementById('overlay').classList.remove('show'); }
 function closeOnBg(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
 
+/* ── [수정] 날짜 제어 동작 분리 (빈 날짜 vs 일정 있는 날짜 클릭 분기) ── */
 function selectDate(ds) {
-  selectedDate = ds; renderCal();
-  const evs = eventsFor(ds); if (evs.length === 0) { document.getElementById('emptyOverlay').classList.add('show'); }
+  selectedDate = ds;
+  renderCal();
+  
+  const evs = eventsFor(ds);
+  if (evs.length === 0) {
+    document.getElementById('emptyOverlay').classList.add('show');
+  } else {
+    // 일정이 있다면 독립 고정식 관리/삭제 전용 모달 팝업 가동
+    openManagePopup(ds);
+  }
 }
 function closeEmptyPopup() { document.getElementById('emptyOverlay').classList.remove('show'); }
 function closeEmptyOnBg(e) { if (e.target === document.getElementById('emptyOverlay')) closeEmptyPopup(); }
 function triggerAddFromEmpty() { closeEmptyPopup(); openPopup(); }
+
+/* ── [새로 구현] 일정 삭제 및 관리 전용 고정 모달 함수 체계 ── */
+function openManagePopup(date) {
+  const [y,m,d] = date.split('-');
+  document.getElementById('mPopupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
+  
+  const evs = eventsFor(date);
+  const listContainer = document.getElementById('mPopupList');
+  
+  let html = '';
+  evs.forEach((ev, index) => {
+    const metaInfo = [ev.time, ev.cat].filter(Boolean).join(' · ');
+    html += `
+      <div class="manage-item">
+        <div class="m-info">
+          <span class="m-title" title="${ev.title}">${ev.title}</span>
+          ${metaInfo ? `<span class="m-meta">${metaInfo}</span>` : ''}
+        </div>
+        <button class="btn-m-del" onclick="deleteEventM(${index}, '${date}')">삭제</button>
+      </div>
+    `;
+  });
+  
+  listContainer.innerHTML = html;
+  document.getElementById('manageOverlay').classList.add('show');
+}
+function closeManagePopup() {
+  document.getElementById('manageOverlay').classList.remove('show');
+}
+function closeManageOnBg(e) {
+  if (e.target === document.getElementById('manageOverlay')) closeManagePopup();
+}
+function deleteEventM(index, date) {
+  const evs = eventsFor(date);
+  const target = evs[index];
+  localEvents = localEvents.filter(e => !(e.date === date && e.title === target.title && e.time === target.time));
+  saveLocal();
+  
+  // 남은 일정이 있으면 팝업 갱신, 다 지워졌으면 팝업을 닫음
+  if (eventsFor(date).length > 0) {
+    openManagePopup(date);
+  } else {
+    closeManagePopup();
+  }
+  renderCal();
+}
 
 function goToday() {
   CY = today.getFullYear(); CM = today.getMonth();
@@ -522,13 +603,6 @@ function goToday() {
 let localEvents = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
 function saveLocal() { localStorage.setItem('tomato_v4', JSON.stringify(localEvents)); }
 function eventsFor(d) { return localEvents.filter(e => e.date === d); }
-
-function deleteEvent(index, date) {
-  const evs = eventsFor(date);
-  const target = evs[index];
-  localEvents = localEvents.filter(e => !(e.date === date && e.title === target.title && e.time === target.time));
-  saveLocal(); hideTip(); renderCal();
-}
 
 let CY = today.getFullYear(), CM = today.getMonth();
 const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -569,27 +643,27 @@ function renderCal() {
 
     const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
     
-    /* [복구] 이벤트 도트(점) 생성 로직 구현 */
+    // [복구 완료] 3개 분량 하단 점 로직 온전히 보존
     const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
     const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
     const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
 
-    html += `<div class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="startTipTimer()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
+    html += `<div class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="hideTip()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
   }
   document.getElementById('calGrid').innerHTML = html;
 }
 
 function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
+/* ── [수정] 단순 정보 조회용 마우스 호버 툴팁 기능 (마우스 아웃 시 무조건 즉시 퇴장) ── */
 function showTip(e, ds) {
-  clearTipTimer();
   const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
   if (!evs.length && !holiday) return;
   document.getElementById('tipDate').textContent = `${ds.split('-')[0]}년 ${+ds.split('-')[1]}월 ${+ds.split('-')[2]}일`;
   let inner = '';
   if (holiday) inner += `<div class="tooltip-item"><div class="t-dot" style="background:#e8392a"></div><div class="t-info"><span class="t-title">${holiday}</span></div></div>`;
   
-  inner += evs.map((ev, index) => {
+  inner += evs.map((ev) => {
     const metaInfo = [ev.time, ev.cat].filter(Boolean).join(' · ');
     return `
       <div class="tooltip-item">
@@ -598,7 +672,6 @@ function showTip(e, ds) {
           <span class="t-title">${ev.title}</span>
           ${metaInfo ? `<span class="t-meta">${metaInfo}</span>` : ''}
         </div>
-        <button class="t-delete-btn" onclick="deleteEvent(${index}, '${ds}')">×</button>
       </div>
     `;
   }).join('');
@@ -610,10 +683,9 @@ function showTip(e, ds) {
   tip.style.top  = (e.clientY+12+tip.offsetHeight > window.innerHeight-8 ? e.clientY-tip.offsetHeight-16 : e.clientY+12) + 'px';
 }
 
-/* [수정] 마우스가 나가면 팝업이 즉시 깔끔하게 지워지도록 타임 아웃 밀리초 조정 */
-function startTipTimer() { tipTimer = setTimeout(hideTip, 80); }
-function clearTipTimer() { if (tipTimer) clearTimeout(tipTimer); }
-function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
+function hideTip() {
+  document.getElementById('tooltip').classList.remove('show');
+}
 
 function addEvent() {
   const time = `${selHour}:${selMin}`;
