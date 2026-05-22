@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>🍅 Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-/* CSS는 이전과 동일하게 유지 */
+/* 기존의 예쁜 핑크 달력 디자인 전체 유지 */
 @font-face { font-family: 'NanumSquareRound'; src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundB.woff') format('woff'); font-weight: 700; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root { --pink: #ff7eb3; --pink-soft: #ffe4f1; --cream: #fff7fc; --text: #3a1a2e; }
@@ -22,11 +23,12 @@ body { font-family: 'NanumSquareRound', sans-serif; background: transparent; pad
 .popup { width: 280px; background: #fff; padding: 20px; border-radius: 20px; }
 input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; }
 .btn-save { width: 100%; padding: 10px; background: #ff7eb3; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+.btn-del { width: 100%; padding: 10px; background: #ff4d4d; color: #fff; border: none; border-radius: 8px; cursor: pointer; margin-top: 5px; }
 </style>
 </head>
 <body>
 <div class="widget">
-  <div class="cal-header" id="calMonth">May</div>
+  <div class="cal-header" id="calMonth">May 2026</div>
   <div class="cal-grid" id="calGrid"></div>
   <button class="add-fab" onclick="openPopupFAB()">+</button>
 </div>
@@ -36,6 +38,7 @@ input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border
     <label>일정</label><input type="text" id="inTitle">
     <label>시간</label><input type="time" id="inTime" value="12:00">
     <button class="btn-save" onclick="addEvent()">저장</button>
+    <button class="btn-del" onclick="deleteEvent()">삭제</button>
   </div>
 </div>
 
@@ -47,7 +50,7 @@ const PIPEDREAM_URL = "https://eoyzg161cnyld0u.m.pipedream.net";
 function renderCal() {
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
-  for(let i=1; i<=30; i++) {
+  for(let i=1; i<=31; i++) {
     const d = `2026-05-${String(i).padStart(2,'0')}`;
     grid.innerHTML += `<div class="day-cell" onclick="selectDate('${d}')">${i}</div>`;
   }
@@ -57,17 +60,21 @@ function openPopupFAB() { document.getElementById('overlay').classList.add('show
 function closePopup() { document.getElementById('overlay').classList.remove('show'); }
 
 async function addEvent() {
-  const newEv = { date: selectedDate, time: document.getElementById('inTime').value, title: document.getElementById('inTitle').value };
+  const newEv = { date: selectedDate, time: document.getElementById('inTime').value, title: document.getElementById('inTitle').value, action: "add" };
   localEvents.push(newEv);
   localStorage.setItem('tomato_v4', JSON.stringify(localEvents));
   closePopup();
-  
-  await fetch(PIPEDREAM_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newEv)
-  });
+  await fetch(PIPEDREAM_URL, { method: "POST", body: JSON.stringify(newEv) });
   alert("등록 완료!");
+}
+
+async function deleteEvent() {
+  const title = document.getElementById('inTitle').value;
+  localEvents = localEvents.filter(e => e.title !== title);
+  localStorage.setItem('tomato_v4', JSON.stringify(localEvents));
+  closePopup();
+  await fetch(PIPEDREAM_URL, { method: "POST", body: JSON.stringify({ action: "delete", title: title }) });
+  alert("삭제 완료!");
 }
 renderCal();
 </script>
