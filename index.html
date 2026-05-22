@@ -25,7 +25,7 @@
   --pink-mid:  #ffc6e0;
   --pink-soft: #ffe4f1;
   --lilac:     #d9a8ff;
-  --yellow:    #ffe066;
+  --yellow:    --ffe066;
   --mint:      #7eecd4;
   --text:      #3a1a2e;
   --text-sub:  #c47fa0;
@@ -54,7 +54,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ── 헤더 ── */
+/* ── 헤더 (완벽한 중앙 정렬 구조로 개편) ── */
 .cal-header {
   background: #ff7eb3;
   padding: 16px 18px 26px;
@@ -71,14 +71,17 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* 부모 요소를 정중앙 정렬 */
   position: relative;
+  width: 100%;
   z-index: 1;
 }
 .nav-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  position: relative;
+  /* 화살표 세트 좌우 대칭 균형을 맞추기 위해 하트 버튼 너비만큼 왼쪽 여백 보정 */
+  padding-right: 34px; 
 }
 .nav-btn {
   width: 26px; height: 26px;
@@ -94,7 +97,10 @@ body {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.45); }
 
+/* 오른쪽 화살표 우측에 자연스러운 간격으로 나란히 배치 */
 .nav-heart-btn {
+  position: absolute;
+  right: 0; /* nav-group 내부의 오른쪽 끝에 고정 배치 */
   width: 26px; height: 26px;
   border-radius: 50%;
   background: rgba(255,255,255,0.3);
@@ -232,14 +238,14 @@ body {
 }
 .add-fab:hover { transform: scale(1.1); }
 
-/* ── 단순 확인용 마우스 호버 툴팁 (삭제버튼 없음, 마우스 나가면 즉시 소멸) ── */
+/* 조회용 툴팁 팝업 */
 .tooltip {
   display: none; position: fixed; z-index: 9999;
   background: #fff; border-radius: 14px; padding: 10px 14px;
   box-shadow: 0 6px 24px rgba(255,126,179,0.15);
   min-width: 160px; max-width: 240px;
   border: 1.5px solid rgba(255,126,179,0.2);
-  pointer-events: none; /* 확인용이므로 마우스 간섭 방지 */
+  pointer-events: none;
 }
 .tooltip.show { display: block; }
 .tooltip-date { font-size: 10px; font-weight: 900; color: var(--pink-dark); margin-bottom: 6px; }
@@ -252,7 +258,7 @@ body {
 .t-title { font-weight: 700; color: var(--text); }
 .t-meta { font-size: 10px; color: var(--text-sub); font-weight: 400; }
 
-/* ── [새로 구현] 일정을 누르면 중앙에 뜨는 "일정 관리/삭제 팝업" 오버레이 스타일 ── */
+/* 일정 관리 및 삭제 전용 모달 팝업 */
 .manage-overlay {
   display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.15); align-items: center; justify-content: center;
 }
@@ -467,6 +473,7 @@ let pickedCat   = '약속';
 let selectedDate = '';
 let selHour = '12';
 let selMin = '00';
+let tipTimer = null;
 const today = new Date();
 
 const HOLIDAYS = {
@@ -531,7 +538,6 @@ function openPopupFAB() {
 function closePopup() { document.getElementById('overlay').classList.remove('show'); }
 function closeOnBg(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
 
-/* ── [수정] 날짜 제어 동작 분리 (빈 날짜 vs 일정 있는 날짜 클릭 분기) ── */
 function selectDate(ds) {
   selectedDate = ds;
   renderCal();
@@ -540,7 +546,6 @@ function selectDate(ds) {
   if (evs.length === 0) {
     document.getElementById('emptyOverlay').classList.add('show');
   } else {
-    // 일정이 있다면 독립 고정식 관리/삭제 전용 모달 팝업 가동
     openManagePopup(ds);
   }
 }
@@ -548,7 +553,6 @@ function closeEmptyPopup() { document.getElementById('emptyOverlay').classList.r
 function closeEmptyOnBg(e) { if (e.target === document.getElementById('emptyOverlay')) closeEmptyPopup(); }
 function triggerAddFromEmpty() { closeEmptyPopup(); openPopup(); }
 
-/* ── [새로 구현] 일정 삭제 및 관리 전용 고정 모달 함수 체계 ── */
 function openManagePopup(date) {
   const [y,m,d] = date.split('-');
   document.getElementById('mPopupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
@@ -573,6 +577,7 @@ function openManagePopup(date) {
   listContainer.innerHTML = html;
   document.getElementById('manageOverlay').classList.add('show');
 }
+// 하트 버튼 클릭 유도 시 선택 마킹 초기화 상태 유지
 function closeManagePopup() {
   document.getElementById('manageOverlay').classList.remove('show');
 }
@@ -585,7 +590,6 @@ function deleteEventM(index, date) {
   localEvents = localEvents.filter(e => !(e.date === date && e.title === target.title && e.time === target.time));
   saveLocal();
   
-  // 남은 일정이 있으면 팝업 갱신, 다 지워졌으면 팝업을 닫음
   if (eventsFor(date).length > 0) {
     openManagePopup(date);
   } else {
@@ -642,8 +646,6 @@ function renderCal() {
     if (ds === selectedDate) cls += ' selected';
 
     const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
-    
-    // [복구 완료] 3개 분량 하단 점 로직 온전히 보존
     const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
     const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
     const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
@@ -655,7 +657,6 @@ function renderCal() {
 
 function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-/* ── [수정] 단순 정보 조회용 마우스 호버 툴팁 기능 (마우스 아웃 시 무조건 즉시 퇴장) ── */
 function showTip(e, ds) {
   const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
   if (!evs.length && !holiday) return;
