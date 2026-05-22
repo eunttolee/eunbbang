@@ -43,7 +43,7 @@ body {
   padding: 28px 12px;
 }
 
-/* ── 위젯 카드 ── */
+/* ── 위젯 카드 (섀도우 완전 제거) ── */
 .widget {
   width: 320px;
   background: var(--cream);
@@ -54,10 +54,10 @@ body {
   flex-shrink: 0;
 }
 
-/* ── 헤더 ── */
+/* ── 헤더 (정렬 수정) ── */
 .cal-header {
   background: #ff7eb3;
-  padding: 16px 14px 26px;
+  padding: 16px 18px 26px;
   position: relative;
   overflow: hidden;
 }
@@ -71,9 +71,14 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  position: relative; z-index: 1;
+  justify-content: center; /* 중앙 정렬 유지 */
+  position: relative;
+  z-index: 1;
+}
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 .nav-btn {
   width: 26px; height: 26px;
@@ -89,8 +94,10 @@ body {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.45); }
 
-/* [상단 배치 바뀐 하트 단추] */
+/* 오늘로 가기 하트 버튼 (오른쪽 끝 배치) */
 .nav-heart-btn {
+  position: absolute;
+  right: 0;
   width: 26px; height: 26px;
   border-radius: 50%;
   background: rgba(255,255,255,0.3);
@@ -100,13 +107,12 @@ body {
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.12s, background 0.12s;
-  line-height: 1;
 }
 .nav-heart-btn:hover { background: rgba(255,255,255,0.5); transform: scale(1.1); }
 
 .cal-month {
   font-size: 18px; font-weight: 900; color: #fff;
-  min-width: 105px; text-align: center;
+  min-width: 110px; text-align: center;
   text-shadow: 0 1px 4px rgba(180,60,130,0.2);
   letter-spacing: 0.5px;
 }
@@ -158,7 +164,7 @@ body {
   border-radius: 50%;
 }
 
-/* 마우스 클릭 선택 하트 효과 */
+/* 선택된 날짜 (연한 핑크 하트) */
 .day-cell.selected:not(.has-event) .day-num {
   color: #ff7eb3 !important;
   font-weight: 900;
@@ -174,15 +180,8 @@ body {
   z-index: -1;
   pointer-events: none;
 }
-.day-cell.selected.today:not(.has-event) .day-num {
-  background: #ff7eb3;
-  color: #fff !important;
-  border-radius: 50%;
-  outline: 2.5px solid #ff7eb3;
-  outline-offset: 2px;
-}
 
-/* 일정이 있는 날 하트 폰트 효과 보완 */
+/* 일정이 저장된 날짜 하트 스타일 (핑크색 글씨 및 투명도 유지) */
 .day-cell.has-event .day-num {
   color: #ff7eb3 !important;
   font-weight: 900;
@@ -202,10 +201,6 @@ body {
   z-index: -1;
   pointer-events: none;
 }
-.day-cell.has-event.today .day-num {
-  outline: 2.5px solid #ff7eb3;
-  outline-offset: 2px;
-}
 
 .event-dot-row {
   display: flex; gap: 2px;
@@ -215,12 +210,12 @@ body {
 }
 .e-dot { width: 4px; height: 4px; border-radius: 50%; }
 
-/* 공휴일 및 대체공휴일 스타일 */
+/* 공휴일 및 대체공휴일 빨간색 강제 적용 */
 .day-cell.holiday .day-num { color: #e8392a !important; font-weight: 900; }
 .day-cell.holiday.other-month .day-num { color: var(--text-other) !important; }
 .holiday-dot { width: 4px; height: 4px; border-radius: 50%; background: #e8392a; }
 
-/* 하단 바 */
+/* ── 하단 바 ── */
 .bottom-bar {
   display: flex; align-items: center; justify-content: flex-end;
   padding: 6px 14px 14px; gap: 8px;
@@ -249,30 +244,30 @@ body {
 }
 .add-fab:hover { transform: scale(1.1); }
 
-/* ── 툴팁 ── */
+/* ── 툴팁 (삭제 및 정보 표시) ── */
 .tooltip {
   display: none; position: fixed; z-index: 9999;
   background: #fff; border-radius: 14px; padding: 10px 14px;
   box-shadow: 0 6px 24px rgba(255,126,179,0.15);
-  min-width: 150px; max-width: 230px;
+  min-width: 160px; max-width: 240px;
   border: 1.5px solid rgba(255,126,179,0.2);
-  pointer-events: auto; /* 삭제 버튼 클릭 유도를 위해 클릭 이벤트 허용 */
+  pointer-events: auto;
 }
 .tooltip.show { display: block; }
 .tooltip-date { font-size: 10px; font-weight: 900; color: var(--pink-dark); margin-bottom: 6px; }
 .tooltip-item {
-  display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text); padding: 4px 0; border-bottom: 1px dashed rgba(255,126,179,0.1); position: relative;
+  display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--text); padding: 5px 0; border-bottom: 1px dashed rgba(255,126,179,0.1); position: relative;
 }
 .tooltip-item:last-of-type { border-bottom: none; }
-.t-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.t-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
 .t-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
-.t-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-title { font-weight: 700; color: var(--text); }
+.t-meta { font-size: 10px; color: var(--text-sub); font-weight: 400; }
 
-/* [삭제 단추 스타일 추가] */
 .t-delete-btn {
-  background: none; border: none; color: #bbb; font-size: 11px; cursor: pointer; padding: 2px 6px; font-weight: 900; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.1s;
+  background: none; border: none; color: #ccc; font-size: 12px; cursor: pointer; padding: 0 4px; font-weight: 900; transition: all 0.1s;
 }
-.t-delete-btn:hover { color: #e8392a; background: var(--pink-soft); }
+.t-delete-btn:hover { color: #e8392a; }
 
 /* ── 팝업 오버레이 ── */
 .overlay {
@@ -295,14 +290,10 @@ body {
 .popup-wave { position: absolute; bottom: 0; left: 0; right: 0; line-height: 0; }
 .popup-wave svg { display: block; width: 100%; }
 .popup-title { font-size: 15px; font-weight: 900; color: #fff; text-align: center; letter-spacing: 1.5px; position: relative; z-index: 1; }
-.popup-date-label { text-align: center; font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.9); margin-top: 4px; position: relative; z-index: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.popup-date-label { text-align: center; font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.9); margin-top: 4px; position: relative; z-index: 1; }
 
 .popup-body { padding: 16px 18px 20px; position: relative; }
 .popup-body label { font-size: 11px; font-weight: 700; color: var(--text-sub); display: block; margin: 10px 0 4px; }
-.popup-body input[type="text"] {
-  width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; font-family: inherit; color: var(--text); outline: none; background: #fff;
-}
-.popup-body input:focus { border-color: var(--pink); }
 
 /* 커스텀 시간 선택기 */
 .time-picker-box {
@@ -313,15 +304,18 @@ body {
 }
 .time-dropdown.show { display: grid; }
 .time-scroll-col {
-  height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: var(--pink-mid) transparent;
+  height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px;
 }
-.time-scroll-col::-webkit-scrollbar { width: 4px; }
-.time-scroll-col::-webkit-scrollbar-thumb { background: var(--pink-mid); border-radius: 4px; }
 .time-cell-item {
-  padding: 6px; font-size: 12px; text-align: center; border-radius: 6px; cursor: pointer; color: var(--text); font-weight: 700; transition: background 0.1s;
+  padding: 6px; font-size: 12px; text-align: center; border-radius: 6px; cursor: pointer; color: var(--text); font-weight: 700;
 }
-.time-cell-item:hover { background: var(--pink-soft); color: var(--pink-dark); }
+.time-cell-item:hover { background: var(--pink-soft); }
 .time-cell-item.active { background: #ff7eb3; color: #fff; }
+
+.popup-body input[type="text"] {
+  width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; font-family: inherit; color: var(--text); outline: none; background: #fff;
+}
+.popup-body input:focus { border-color: var(--pink); }
 
 .cat-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
 .cat-chip { padding: 4px 11px; border-radius: 99px; font-size: 11px; font-weight: 700; border: 1.5px solid rgba(255,126,179,0.25); background: #fff; color: var(--text-sub); cursor: pointer; font-family: inherit; }
@@ -333,15 +327,13 @@ body {
 .swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.1); position: relative; }
 .swatch.on { border-color: var(--text); }
 .swatch.on::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 900; }
-.color-sep { width: 1px; height: 20px; background: rgba(255,126,179,0.15); }
-.custom-color-wrap { display: flex; align-items: center; gap: 5px; }
 .custom-color-wrap input[type="color"] { width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,126,179,0.3); cursor: pointer; padding: 0; background: none; }
 
 .popup-btns { display: flex; gap: 8px; margin-top: 16px; }
 .btn-cancel { flex: 1; padding: 9px; background: var(--pink-soft); color: var(--pink-dark); border: none; border-radius: 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .btn-save { flex: 2; padding: 9px; background: #ff7eb3; color: #fff; border: none; border-radius: 11px; font-size: 12px; font-weight: 900; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(255,126,179,0.3); }
 
-/* 빈 날짜 클릭 시 중앙 팝업 */
+/* 빈 날짜 중앙 팝업 */
 .empty-overlay {
   display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.12); align-items: center; justify-content: center;
 }
@@ -359,9 +351,11 @@ body {
 <div class="widget">
   <div class="cal-header">
     <div class="header-nav">
-      <button class="nav-btn" onclick="changeMonth(-1)">←</button>
-      <div class="cal-month" id="calMonth"></div>
-      <button class="nav-btn" onclick="changeMonth(1)">→</button>
+      <div class="nav-group">
+        <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+        <div class="cal-month" id="calMonth"></div>
+        <button class="nav-btn" onclick="changeMonth(1)">→</button>
+      </div>
       <button class="nav-heart-btn" onclick="goToday()" title="오늘 날짜로 이동">❤</button>
     </div>
     <div class="header-wave">
@@ -434,10 +428,8 @@ body {
         <div class="swatch" style="background:#ffe066" data-color="#ffe066" onclick="pickColor(this)"></div>
         <div class="swatch" style="background:#7eecd4" data-color="#7eecd4" onclick="pickColor(this)"></div>
         <div class="swatch" style="background:#ff9a7a" data-color="#ff9a7a" onclick="pickColor(this)"></div>
-        <div class="color-sep"></div>
         <div class="custom-color-wrap">
           <input type="color" id="customColor" value="#ff7eb3" oninput="pickCustomColor(this)">
-          <span>직접</span>
         </div>
       </div>
 
@@ -465,28 +457,37 @@ let selMin = '00';
 let tipTimer = null;
 const today = new Date();
 
+/* ── 대한민국 관공서 공휴일 기준 데이터 (2025~2026) ── */
+const HOLIDAYS = {
+  '2025-01-01': '신정', '2025-01-28': '설날 연휴', '2025-01-29': '설날', '2025-01-30': '설날 연휴',
+  '2025-03-01': '삼일절', '2025-03-03': '삼일절 대체공휴일', '2025-05-05': '어린이날', '2025-06-06': '현충일',
+  '2025-08-15': '광복절', '2025-10-03': '개천절', '2025-10-05': '추석 연휴', '2025-10-06': '추석',
+  '2025-10-07': '추석 연휴', '2025-10-08': '추석 대체공휴일', '2025-10-09': '한글날', '2025-12-25': '크리스마스',
+  
+  '2026-01-01': '신정', '2026-01-28': '설날 연휴', '2026-01-29': '설날', '2026-01-30': '설날 연휴',
+  '2026-03-01': '삼일절', '2026-03-02': '삼일절 대체공휴일', '2026-05-05': '어린이날', '2026-05-24': '부처님오신날', 
+  '2026-05-25': '부처님오신날 대체공휴일', '2026-06-06': '현충일', '2026-08-15': '광복절', 
+  '2026-08-17': '광복절 대체공휴일', '2026-09-24': '추석 연휴', '2026-09-25': '추석', 
+  '2026-09-26': '추석 연휴', '2026-10-03': '개천절', '2026-10-05': '개천절 대체공휴일', 
+  '2026-10-09': '한글날', '2026-12-25': '크리스마스',
+};
+
 function pickColor(el) {
   document.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
-  el.classList.add('on');
-  pickedColor = el.dataset.color;
-  document.getElementById('customColor').value = pickedColor;
+  el.classList.add('on'); pickedColor = el.dataset.color || '#ff7eb3';
 }
 function pickCustomColor(el) {
-  pickedColor = el.value;
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+  pickedColor = el.value; document.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
 }
 function pickCat(el) {
   document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-  pickedCat = el.dataset.cat;
+  el.classList.add('on'); pickedCat = el.dataset.cat;
   const ci = document.getElementById('catCustom');
   pickedCat === '__custom__' ? ci.classList.add('show') : ci.classList.remove('show');
 }
 
 function initCustomTimePicker() {
-  const hourCol = document.getElementById('hourCol');
-  const minCol = document.getElementById('minCol');
-  
+  const hourCol = document.getElementById('hourCol'); const minCol = document.getElementById('minCol');
   let hHtml = '', mHtml = '';
   for(let i=0; i<24; i++) {
     const hh = String(i).padStart(2,'0');
@@ -496,167 +497,99 @@ function initCustomTimePicker() {
     const mm = String(i).padStart(2,'0');
     mHtml += `<div class="time-cell-item ${mm==='00'?'active':''}" data-val="${mm}" onclick="selectMin('${mm}', this)">${mm}분</div>`;
   }
-  hourCol.innerHTML = hHtml;
-  minCol.innerHTML = mHtml;
-  updateTimeDisplay();
+  hourCol.innerHTML = hHtml; minCol.innerHTML = mHtml; updateTimeDisplay();
 }
 
-function toggleTimeDropdown(e) {
-  e.stopPropagation();
-  document.getElementById('timeDropdown').classList.toggle('show');
-}
-
-function selectHour(h, el) {
-  selHour = h;
-  document.querySelectorAll('#hourCol .time-cell-item').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  updateTimeDisplay();
-}
-
-function selectMin(m, el) {
-  selMin = m;
-  document.querySelectorAll('#minCol .time-cell-item').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  updateTimeDisplay();
-  document.getElementById('timeDropdown').classList.remove('show');
-}
-
-function updateTimeDisplay() {
-  document.getElementById('timeDisplay').textContent = `${selHour}:${selMin}`;
-}
-
-document.addEventListener('click', () => {
-  document.getElementById('timeDropdown').classList.remove('show');
-});
+function toggleTimeDropdown(e) { e.stopPropagation(); document.getElementById('timeDropdown').classList.toggle('show'); }
+function selectHour(h, el) { selHour = h; document.querySelectorAll('#hourCol .time-cell-item').forEach(c => c.classList.remove('active')); el.classList.add('active'); updateTimeDisplay(); }
+function selectMin(m, el) { selMin = m; document.querySelectorAll('#minCol .time-cell-item').forEach(c => c.classList.remove('active')); el.classList.add('active'); updateTimeDisplay(); document.getElementById('timeDropdown').classList.remove('show'); }
+function updateTimeDisplay() { document.getElementById('timeDisplay').textContent = `${selHour}:${selMin}`; }
+document.addEventListener('click', () => { document.getElementById('timeDropdown').classList.remove('show'); });
 
 function openPopup() {
   if (!selectedDate) return;
   const [y,m,d] = selectedDate.split('-');
   document.getElementById('popupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
-  document.getElementById('inTitle').value = '';
-  selHour = '12'; selMin = '00';
-  initCustomTimePicker();
-  document.getElementById('overlay').classList.add('show');
+  document.getElementById('inTitle').value = ''; selHour = '12'; selMin = '00';
+  initCustomTimePicker(); document.getElementById('overlay').classList.add('show');
 }
 function closePopup() { document.getElementById('overlay').classList.remove('show'); }
 function closeOnBg(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
 
 function selectDate(ds) {
-  selectedDate = ds;
-  renderCal();
-  
-  const evs = eventsFor(ds);
-  if (evs.length === 0) {
-    document.getElementById('emptyOverlay').classList.add('show');
-  }
+  selectedDate = ds; renderCal();
+  const evs = eventsFor(ds); if (evs.length === 0) { document.getElementById('emptyOverlay').classList.add('show'); }
 }
 function closeEmptyPopup() { document.getElementById('emptyOverlay').classList.remove('show'); }
 function closeEmptyOnBg(e) { if (e.target === document.getElementById('emptyOverlay')) closeEmptyPopup(); }
-function triggerAddFromEmpty() {
-  closeEmptyPopup();
-  openPopup();
-}
+function triggerAddFromEmpty() { closeEmptyPopup(); openPopup(); }
 
-/* [수정] 오늘로 가기 시 달력 하트표시 선택효과 제거 */
 function goToday() {
-  CY = today.getFullYear();
-  CM = today.getMonth();
-  selectedDate = ''; // 단순 월 전환용이므로 선택 효과 초기화
+  CY = today.getFullYear(); CM = today.getMonth();
+  selectedDate = ''; // 하트 마킹 제거
   renderCal();
 }
 
-let notionEvents = [];
-let localEvents  = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
+let localEvents = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
 function saveLocal() { localStorage.setItem('tomato_v4', JSON.stringify(localEvents)); }
-function eventsFor(d) { return [...notionEvents, ...localEvents].filter(e => e.date === d); }
+function eventsFor(d) { return localEvents.filter(e => e.date === d); }
 
-/* [추가] 로컬 등록 일정 개별 삭제 기능 구현 */
 function deleteEvent(index, date) {
   const evs = eventsFor(date);
-  const targetEvent = evs[index];
-  
-  if (targetEvent && targetEvent.source === 'local') {
-    // localEvents 배열 전체에서 완전 일치 항목 필터 제거
-    localEvents = localEvents.filter(e => !(e.date === date && e.title === targetEvent.title && e.time === targetEvent.time));
-    saveLocal();
-    hideTip();
-    renderCal();
-  } else {
-    alert('노션 연동 일정은 노션 앱 내에서 직접 삭제할 수 있어요! 🍅');
-  }
+  const target = evs[index];
+  localEvents = localEvents.filter(e => !(e.date === date && e.title === target.title && e.time === target.time));
+  saveLocal(); hideTip(); renderCal();
 }
 
 let CY = today.getFullYear(), CM = today.getMonth();
 const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-/* ── [수정] 한국 기준 법정 대체공휴일 데이터 엄격 보정 ── */
-const HOLIDAYS = {
-  '2025-01-01': '신정', '2025-01-28': '설날 연휴', '2025-01-29': '설날', '2025-01-30': '설날 연휴',
-  '2025-03-01': '삼일절', '2025-05-05': '어린이날', '2025-05-06': '어린이날 대체공휴일', '2025-06-06': '현충일',
-  '2025-08-15': '광복절', '2025-10-03': '개천절', '2025-10-05': '추석 연휴', '2025-10-06': '추석',
-  '2025-10-07': '추석 연휴', '2025-10-08': '추석 대체공휴일', '2025-10-09': '한글날', '2025-12-25': '크리스마스',
-  
-  '2026-01-01': '신정', '2026-01-28': '설날 연휴', '2026-01-29': '설날', '2026-01-30': '설날 연휴',
-  '2026-03-01': '삼일절', '2026-05-05': '어린이날', '2026-05-24': '부처님오신날', '2026-06-06': '현충일', 
-  '2026-08-15': '광복절', '2026-09-24': '추석 연휴', '2026-09-25': '추석', '2026-09-26': '추석 연휴', 
-  '2026-10-03': '개천절', '2026-10-05': '개천절 대체공휴일', '2026-10-09': '한글날', '2026-12-25': '크리스마스',
-};
-
 function changeMonth(d) {
-  CM += d;
-  if (CM > 11) { CM = 0; CY++; }
-  if (CM < 0)  { CM = 11; CY--; }
-  renderCal();
+  CM += d; if (CM > 11) { CM = 0; CY++; } if (CM < 0) { CM = 11; CY--; } renderCal();
 }
 
 function renderCal() {
   document.getElementById('calMonth').textContent = EN_MONTHS[CM];
-  const firstDay    = new Date(CY, CM, 1).getDay();
+  const firstDay = new Date(CY, CM, 1).getDay();
   const daysInMonth = new Date(CY, CM+1, 0).getDate();
-  const daysInPrev  = new Date(CY, CM, 0).getDate();
-  const todayStr    = fmtDate(today);
-  const total       = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+  const daysInPrev = new Date(CY, CM, 0).getDate();
+  const todayStr = fmtDate(today);
+  const total = Math.ceil((firstDay + daysInMonth) / 7) * 7;
 
   let html = '';
   for (let i = 0; i < total; i++) {
     let day, mo, yr, other = false;
-    if (i < firstDay) {
-      day = daysInPrev - firstDay + i + 1; mo = CM===0?11:CM-1; yr = CM===0?CY-1:CY; other = true;
-    } else if (i >= firstDay + daysInMonth) {
-      day = i - firstDay - daysInMonth + 1; mo = CM===11?0:CM+1; yr = CM===11?CY+1:CY; other = true;
-    } else {
-      day = i - firstDay + 1; mo = CM; yr = CY;
-    }
-    const ds       = fmtDate(new Date(yr, mo, day));
-    const evs      = other ? [] : eventsFor(ds);
-    const isT      = ds === todayStr;
-    const dow      = i % 7;
-    const holiday  = !other && HOLIDAYS[ds];
+    if (i < firstDay) { day = daysInPrev - firstDay + i + 1; mo = CM===0?11:CM-1; yr = CM===0?CY-1:CY; other = true; }
+    else if (i >= firstDay + daysInMonth) { day = i - firstDay - daysInMonth + 1; mo = CM===11?0:CM+1; yr = CM===11?CY+1:CY; other = true; }
+    else { day = i - firstDay + 1; mo = CM; yr = CY; }
+
+    const ds = fmtDate(new Date(yr, mo, day));
+    const evs = other ? [] : eventsFor(ds);
+    const isT = ds === todayStr;
+    const dow = i % 7;
+    const holiday = !other && HOLIDAYS[ds];
 
     let cls = 'day-cell';
-    if (other)              cls += ' other-month';
-    if (isT)                cls += ' today';
-    if (dow===0 && !other)  cls += ' sun';
-    if (dow===6 && !other)  cls += ' sat';
-    if (holiday)            cls += ' holiday';
-    if (evs.length)         cls += ' has-event';
+    if (other) cls += ' other-month';
+    if (isT) cls += ' today';
+    if (dow===0 && !other) cls += ' sun';
+    if (dow===6 && !other) cls += ' sat';
+    if (holiday) cls += ' holiday'; // 대체공휴일 텍스트 포함 시 빨간색 클래스 추가
+    if (evs.length) cls += ' has-event';
     if (ds === selectedDate) cls += ' selected';
 
     const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
-    const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
     const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
-    const tipExtra = holiday ? ` data-holiday="${HOLIDAYS[ds]}"` : '';
-    
     const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
 
-    html += `<div class="${cls}" data-date="${ds}"${tipExtra} onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="startTipTimer()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
+    html += `<div class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="startTipTimer()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${hDot}</div></div>`;
   }
   document.getElementById('calGrid').innerHTML = html;
 }
 
 function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-/* ── 툴팁 팝업 기능 고도화 (삭제 단추 연동) ── */
+/* ── 툴팁 표시 수정 (시간 & 카테고리 포함) ── */
 function showTip(e, ds) {
   clearTipTimer();
   const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
@@ -665,44 +598,39 @@ function showTip(e, ds) {
   let inner = '';
   if (holiday) inner += `<div class="tooltip-item"><div class="t-dot" style="background:#e8392a"></div><div class="t-info"><span class="t-title">${holiday}</span></div></div>`;
   
-  // 개별 인덱스를 넘겨 로컬 스토리지 삭제 유도
-  inner += evs.map((ev, index) => `
-    <div class="tooltip-item">
-      <div class="t-dot" style="background:${ev.color||'#ff7eb3'}"></div>
-      <div class="t-info"><span class="t-title">${ev.title}</span></div>
-      <button class="t-delete-btn" onclick="deleteEvent(${index}, '${ds}')" title="삭제">×</button>
-    </div>
-  `).join('');
+  inner += evs.map((ev, index) => {
+    // [수정] 시간과 카테고리 정보를 문자열로 조합
+    const metaInfo = [ev.time, ev.cat].filter(Boolean).join(' · ');
+    return `
+      <div class="tooltip-item">
+        <div class="t-dot" style="background:${ev.color||'#ff7eb3'}"></div>
+        <div class="t-info">
+          <span class="t-title">${ev.title}</span>
+          ${metaInfo ? `<span class="t-meta">${metaInfo}</span>` : ''}
+        </div>
+        <button class="t-delete-btn" onclick="deleteEvent(${index}, '${ds}')">×</button>
+      </div>
+    `;
+  }).join('');
   
   document.getElementById('tipItems').innerHTML = inner;
   const tip = document.getElementById('tooltip');
   tip.classList.add('show');
-  
-  // 마우스 위치 기준 고정 배치
   tip.style.left = (e.clientX+12+tip.offsetWidth > window.innerWidth-8 ? e.clientX-tip.offsetWidth-16 : e.clientX+12) + 'px';
   tip.style.top  = (e.clientY+12+tip.offsetHeight > window.innerHeight-8 ? e.clientY-tip.offsetHeight-16 : e.clientY+12) + 'px';
 }
 
-function startTipTimer() {
-  tipTimer = setTimeout(hideTip, 400); // 툴팁 내부로 마우스 이동할 여유 시간 부여
-}
-function clearTipTimer() {
-  if (tipTimer) clearTimeout(tipTimer);
-}
-function hideTip() {
-  document.getElementById('tooltip').classList.remove('show');
-}
+function startTipTimer() { tipTimer = setTimeout(hideTip, 400); }
+function clearTipTimer() { if (tipTimer) clearTimeout(tipTimer); }
+function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
 
 function addEvent() {
   const time = `${selHour}:${selMin}`;
   const title = document.getElementById('inTitle').value.trim();
   let cat = pickedCat === '__custom__' ? document.getElementById('catCustom').value.trim() : pickedCat;
   if (!title) { alert('일정 내용을 입력해주세요!'); return; }
-  
   localEvents.push({ date: selectedDate, time, title, cat, color: pickedColor, source: 'local' });
-  saveLocal(); 
-  closePopup(); 
-  renderCal();
+  saveLocal(); closePopup(); renderCal();
 }
 function doRefresh() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); btn.addEventListener('animationend', () => btn.classList.remove('spinning'), { once: true }); renderCal(); }
 
