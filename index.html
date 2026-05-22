@@ -54,31 +54,55 @@ body {
   flex-shrink: 0;
 }
 
-/* ── 헤더 (완벽한 구조적 중앙 정렬 배정) ── */
+/* ── 헤더 (의문의 구분선 완전 제거 및 대칭 레이아웃 설계) ── */
 .cal-header {
   background: #ff7eb3;
-  padding: 16px 10px 26px;
+  padding: 18px 16px 28px;
   position: relative;
   overflow: hidden;
-  display: flex;
-  justify-content: center; /* 헤더 영역 자체에서 가로 중앙 정렬 */
+  border: none !important; /* 구분선 원천 차단 */
 }
 .header-wave {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   line-height: 0;
+  border: none !important;
 }
-.header-wave svg { display: block; width: 100%; }
+.header-wave svg { display: block; width: 100%; border: none !important; }
 
-/* [개편] 버튼셋 전체가 한 덩어리로 묶여 절대 삐뚤어지지 않는 핵심 틀 */
+/* [대수술] 가로 비율을 완벽히 계산하는 3단 그리드 시스템 */
 .header-nav {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* 좌우 공간을 균등 배분 */
   align-items: center;
-  justify-content: center;
-  gap: 8px;
   position: relative;
   z-index: 1;
+  width: 100%;
 }
+
+/* 왼쪽 정렬 구역 (이전 버튼) */
+.nav-left-zone {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 18px; /* 중앙 월 이름과의 대칭 간격 */
+}
+
+/* 가운데 정렬 구역 (정중앙 고정 월 표시) */
+.nav-center-zone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 오른쪽 정렬 구역 (다음 버튼 + 하단 규칙 간격의 하트) */
+.nav-right-zone {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 18px; /* 중앙 월 이름과의 대칭 간격 */
+  gap: 8px; /* 화살표 버튼과 하트 버튼 사이의 조화로운 간격 */
+}
+
 .nav-btn {
   width: 26px; height: 26px;
   border-radius: 50%;
@@ -93,14 +117,13 @@ body {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.45); }
 
-/* 화살표 옆에 일정한 간격으로 나란히 정렬되는 오늘 이동 하트 */
 .nav-heart-btn {
   width: 26px; height: 26px;
   border-radius: 50%;
   background: rgba(255,255,255,0.3);
   border: 1px solid rgba(255,255,255,0.6);
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.12s, background 0.12s;
@@ -109,16 +132,17 @@ body {
 .nav-heart-btn:hover { background: rgba(255,255,255,0.5); transform: scale(1.1); }
 
 .cal-month {
-  font-size: 18px; font-weight: 900; color: #fff;
-  min-width: 95px; text-align: center;
-  text-shadow: 0 1px 4px rgba(180,60,130,0.2);
+  font-size: 19px; font-weight: 900; color: #fff;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(180,60,130,0.15);
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* ── 요일 ── */
 .weekdays {
   display: grid; grid-template-columns: repeat(7,1fr);
-  padding: 12px 12px 4px;
+  padding: 14px 12px 4px;
 }
 .wd {
   text-align: center; font-size: 10px; font-weight: 700;
@@ -263,7 +287,6 @@ body {
 }
 @keyframes mPop { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* [수정] 상단 타이틀 행에 일정 추가용 미니 플러스 버튼 탑재 */
 .manage-header-row {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding: 0 4px;
 }
@@ -366,9 +389,15 @@ body {
 <div class="widget">
   <div class="cal-header">
     <div class="header-nav">
-      <div class="nav-group">
+      <div class="nav-left-zone">
         <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+      </div>
+      
+      <div class="nav-center-zone">
         <div class="cal-month" id="calMonth"></div>
+      </div>
+      
+      <div class="nav-right-zone">
         <button class="nav-btn" onclick="changeMonth(1)">→</button>
         <button class="nav-heart-btn" onclick="goToday()" title="오늘 날짜로 이동">❤</button>
       </div>
@@ -403,12 +432,20 @@ body {
 <div class="manage-overlay" id="manageOverlay" onclick="closeManageOnBg(event)">
   <div class="manage-popup">
     <div class="manage-header-row">
-      <div style="width: 22px;"></div> <div class="manage-title">일정 관리 🍅</div>
+      <div style="width: 22px;"></div>
+      <div class="manage-title">일정 관리 🍅</div>
       <button class="btn-m-add-new" onclick="triggerAddFromManage()" title="이 날짜에 일정 바로 추가">+</button>
     </div>
     <div class="manage-date" id="mPopupDateLabel">날짜</div>
     <div class="manage-list" id="mPopupList"></div>
     <button class="btn-m-close" onclick="closeManagePopup()">닫기</button>
+  </div>
+</div>
+
+<div class="empty-overlay" id="emptyOverlay" onclick="closeEmptyOnBg(event)">
+  <div class="empty-popup">
+    <div class="empty-msg">등록된 일정이 없습니다. <br>새로운 일정을 추가할까요? 🍅</div>
+    <button class="btn-go-add" onclick="triggerAddFromEmpty()">일정 추가하기 🩷</button>
   </div>
 </div>
 
@@ -474,7 +511,9 @@ let pickedCat   = '약속';
 let selectedDate = '';
 let selHour = '12';
 let selMin = '00';
-let isManageOpen = false; // [추가] 관리 모달 활성화 감지 상태값
+let isManageOpen = false;
+let notionEvents = [];
+let localEvents = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
 const today = new Date();
 
 const HOLIDAYS = {
@@ -555,8 +594,8 @@ function closeEmptyOnBg(e) { if (e.target === document.getElementById('emptyOver
 function triggerAddFromEmpty() { closeEmptyPopup(); openPopup(); }
 
 function openManagePopup(date) {
-  isManageOpen = true; // 관리 팝업이 활성화되었으므로 호버 창 차단 유도
-  hideTip(); // 켜져 있던 툴팁 즉시 강제 소멸
+  isManageOpen = true;
+  hideTip();
   const [y,m,d] = date.split('-');
   document.getElementById('mPopupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
   
@@ -566,13 +605,14 @@ function openManagePopup(date) {
   let html = '';
   evs.forEach((ev, index) => {
     const metaInfo = [ev.time, ev.cat].filter(Boolean).join(' · ');
+    const isNotion = ev.source === 'notion';
     html += `
       <div class="manage-item">
         <div class="m-info">
-          <span class="m-title" title="${ev.title}">${ev.title}</span>
+          <span class="m-title" title="${ev.title}">${isNotion ? '📝 ' : ''}${ev.title}</span>
           ${metaInfo ? `<span class="m-meta">${metaInfo}</span>` : ''}
         </div>
-        <button class="btn-m-del" onclick="deleteEventM(${index}, '${date}')">삭제</button>
+        ${isNotion ? '<span class="m-meta" style="font-size:10px; color:#aaa; padding:4px;">노션연동</span>' : `<button class="btn-m-del" onclick="deleteEventM(${index}, '${date}')">삭제</button>`}
       </div>
     `;
   });
@@ -581,14 +621,13 @@ function openManagePopup(date) {
   document.getElementById('manageOverlay').classList.add('show');
 }
 function closeManagePopup() {
-  isManageOpen = false; // 해제
+  isManageOpen = false;
   document.getElementById('manageOverlay').classList.remove('show');
 }
 function closeManageOnBg(e) {
   if (e.target === document.getElementById('manageOverlay')) closeManagePopup();
 }
 
-/* [추가] 관리 모달 내 상단 '+' 아이콘 클릭 시 일정 입력 연동 구조 */
 function triggerAddFromManage() {
   closeManagePopup();
   openPopup();
@@ -610,13 +649,16 @@ function deleteEventM(index, date) {
 
 function goToday() {
   CY = today.getFullYear(); CM = today.getMonth();
-  selectedDate = ''; 
+  selectedDate = fmtDate(today); 
   renderCal();
 }
 
-let localEvents = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
 function saveLocal() { localStorage.setItem('tomato_v4', JSON.stringify(localEvents)); }
-function eventsFor(d) { return localEvents.filter(e => e.date === d); }
+function eventsFor(d) { 
+  const loc = localEvents.filter(e => e.date === d);
+  const noti = notionEvents.filter(e => e.date === d);
+  return [...loc, ...noti];
+}
 
 let CY = today.getFullYear(), CM = today.getMonth();
 const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -668,7 +710,7 @@ function renderCal() {
 function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
 function showTip(e, ds) {
-  if (isManageOpen) return; // [수정] 일정 관리 팝업이 떠있을 때는 호버 창 전면 차단
+  if (isManageOpen) return;
   
   const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
   if (!evs.length && !holiday) return;
@@ -708,10 +750,41 @@ function addEvent() {
   localEvents.push({ date: selectedDate, time, title, cat, color: pickedColor, source: 'local' });
   saveLocal(); closePopup(); renderCal();
 }
-function doRefresh() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); btn.addEventListener('animationend', () => btn.classList.remove('spinning'), { once: true }); renderCal(); }
+
+function doRefresh() { 
+  const btn = document.getElementById('refreshBtn'); 
+  btn.classList.add('spinning'); 
+  btn.addEventListener('animationend', () => btn.classList.remove('spinning'), { once: true }); 
+  fetchNotion(); 
+}
+
+/* ── Notion 실시간 연동 시스템 복구 완료 ── */
+async function fetchNotion() {
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: `Use the Notion MCP tool to query database "2020bfb4-f307-8153-a0cc-d4c90815d4f1". Get all pages with 할일, 날짜, 업무구분 properties.\nReturn ONLY a valid JSON array, no markdown:\n[{\"date\":\"YYYY-MM-DD\",\"time\":\"HH:MM or empty\",\"title\":\"할일\",\"cat\":\"업무구분 or empty\",\"color\":\"hex: 약속=#ff7eb3, 업무=#d97aff, 레벨업=#ffe066, 취미=#7eecd4, 휴식=#ff9a7a, default=#ff7eb3\",\"source\":\"notion\"}]\nSkip null 날짜. Return [] if none.`,
+        messages: [{ role: "user", content: "Notion 일정 JSON 반환." }]
+      })
+    });
+    if(res.ok) {
+      const data = await res.json();
+      if(data && data.content && data.content[0]) {
+        const text = data.content[0].text;
+        notionEvents = JSON.parse(text.substring(text.indexOf('['), text.lastIndexOf(']')+1));
+        renderCal();
+      }
+    }
+  } catch(e) { console.error("Notion 연동 실패:", e); }
+}
 
 selectedDate = fmtDate(today);
 renderCal();
+fetchNotion(); // 초기 구동 시 노션 데이터 호출
 </script>
 </body>
 </html>
