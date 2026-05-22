@@ -35,7 +35,7 @@
 
 body {
   font-family: 'NanumSquareRound', 'Nanum Gothic', sans-serif;
-  background: #f9f9f9;
+  background: transparent; /* 외부 배경색 투명화 */
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
@@ -143,7 +143,7 @@ body {
   border-radius: 50%;
 }
 
-/* 선택 상태 */
+/* 선택된 날짜 하트 */
 .day-cell.selected:not(.has-event):not(.today) .day-num {
   color: #ff7eb3 !important;
   font-weight: 900;
@@ -167,7 +167,7 @@ body {
   outline-offset: 2px;
 }
 
-/* 이벤트 날짜 */
+/* 일정이 저장된 날짜 하트 (지정한 색상 매칭 보완) */
 .day-cell.has-event .day-num {
   color: #fff !important;
   font-weight: 900;
@@ -192,7 +192,7 @@ body {
 }
 .e-dot { width: 4px; height: 4px; border-radius: 50%; }
 
-/* 공휴일 빨강 */
+/* 공휴일 */
 .day-cell.holiday .day-num { color: #e8392a; font-weight: 900; }
 .day-cell.holiday.other-month .day-num { color: var(--text-other); }
 .holiday-dot { width: 4px; height: 4px; border-radius: 50%; background: #e8392a; }
@@ -242,7 +242,7 @@ body {
 .t-title { font-weight: 700; }
 .t-meta { font-size: 10px; color: var(--text-sub); }
 
-/* ── 팝업 오버레이 (노션 가로 너비에 맞춰 유연하게 조정) ── */
+/* ── 팝업 오버레이 ── */
 .overlay {
   display: none;
   position: fixed; inset: 0; z-index: 100;
@@ -253,7 +253,6 @@ body {
 }
 .overlay.show { display: flex; }
 
-/* 캘린더 우측 배치를 위한 컨테이너 정렬 조건 보완 */
 @media (min-width: 660px) {
   .overlay {
     justify-content: flex-start;
@@ -281,14 +280,33 @@ body {
 .popup-wave { position: absolute; bottom: 0; left: 0; right: 0; line-height: 0; }
 .popup-wave svg { display: block; width: 100%; }
 .popup-title { font-size: 15px; font-weight: 900; color: #fff; text-align: center; letter-spacing: 1.5px; position: relative; z-index: 1; }
-.popup-date-label { text-align: center; font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.9); margin-top: 4px; position: relative; z-index: 1; }
+.popup-date-label { text-align: center; font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.9); margin-top: 4px; position: relative; z-index: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-.popup-body { padding: 16px 18px 20px; }
+.popup-body { padding: 16px 18px 20px; position: relative; }
 .popup-body label { font-size: 11px; font-weight: 700; color: var(--text-sub); display: block; margin: 10px 0 4px; }
-.popup-body input[type="time"], .popup-body input[type="text"] {
+.popup-body input[type="text"] {
   width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; font-family: inherit; color: var(--text); outline: none; background: #fff;
 }
 .popup-body input:focus { border-color: var(--pink); }
+
+/* ── [새로 구현] 러블리 핑크 커스텀 시간 선택기 스타일 ── */
+.time-picker-box {
+  width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; color: var(--text); background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.time-dropdown {
+  display: none; position: absolute; top: 52px; left: 18px; right: 18px; background: #fff; border: 1.5px solid var(--pink); border-radius: 14px; box-shadow: 0 6px 20px rgba(255,126,179,0.25); z-index: 10; padding: 8px; gap: 8px; grid-template-columns: 1fr 1fr;
+}
+.time-dropdown.show { display: grid; }
+.time-scroll-col {
+  height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: var(--pink-mid) transparent;
+}
+.time-scroll-col::-webkit-scrollbar { width: 4px; }
+.time-scroll-col::-webkit-scrollbar-thumb { background: var(--pink-mid); border-radius: 4px; }
+.time-cell-item {
+  padding: 6px; font-size: 12px; text-align: center; border-radius: 6px; cursor: pointer; color: var(--text); font-weight: 700; transition: background 0.1s;
+}
+.time-cell-item:hover { background: var(--pink-soft); color: var(--pink-dark); }
+.time-cell-item.active { background: #ff7eb3; color: #fff; }
 
 .cat-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
 .cat-chip { padding: 4px 11px; border-radius: 99px; font-size: 11px; font-weight: 700; border: 1.5px solid rgba(255,126,179,0.25); background: #fff; color: var(--text-sub); cursor: pointer; font-family: inherit; }
@@ -370,7 +388,14 @@ body {
     </div>
     <div class="popup-body">
       <label>시간</label>
-      <input type="time" id="inTime">
+      <div class="time-picker-box" onclick="toggleTimeDropdown(event)">
+        <span id="timeDisplay">시간을 선택해주세요 🩷</span>
+        <span>▼</span>
+      </div>
+      <div class="time-dropdown" id="timeDropdown" onclick="event.stopPropagation()">
+        <div class="time-scroll-col" id="hourCol"></div>
+        <div class="time-scroll-col" id="minCol"></div>
+      </div>
 
       <label>일정 내용</label>
       <input type="text" id="inTitle" placeholder="무슨 일정인가요?">
@@ -419,6 +444,8 @@ body {
 let pickedColor = '#ff7eb3';
 let pickedCat   = '약속';
 let selectedDate = '';
+let selHour = '12';
+let selMin = '00';
 const today = new Date();
 
 function pickColor(el) {
@@ -439,12 +466,61 @@ function pickCat(el) {
   pickedCat === '__custom__' ? ci.classList.add('show') : ci.classList.remove('show');
 }
 
+/* ── 커스텀 시간 드롭다운 로직 ── */
+function initCustomTimePicker() {
+  const hourCol = document.getElementById('hourCol');
+  const minCol = document.getElementById('minCol');
+  
+  let hHtml = '', mHtml = '';
+  for(let i=0; i<24; i++) {
+    const hh = String(i).padStart(2,'0');
+    hHtml += `<div class="time-cell-item ${hh==='12'?'active':''}" data-val="${hh}" onclick="selectHour('${hh}', this)">${hh}시</div>`;
+  }
+  for(let i=0; i<60; i+=5) {
+    const mm = String(i).padStart(2,'0');
+    mHtml += `<div class="time-cell-item ${mm==='00'?'active':''}" data-val="${mm}" onclick="selectMin('${mm}', this)">${mm}분</div>`;
+  }
+  hourCol.innerHTML = hHtml;
+  minCol.innerHTML = mHtml;
+  updateTimeDisplay();
+}
+
+function toggleTimeDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('timeDropdown').classList.toggle('show');
+}
+
+function selectHour(h, el) {
+  selHour = h;
+  document.querySelectorAll('#hourCol .time-cell-item').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  updateTimeDisplay();
+}
+
+function selectMin(m, el) {
+  selMin = m;
+  document.querySelectorAll('#minCol .time-cell-item').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  updateTimeDisplay();
+  document.getElementById('timeDropdown').classList.remove('show'); // 분 선택 시 자동 닫힘
+}
+
+function updateTimeDisplay() {
+  document.getElementById('timeDisplay').textContent = `${selHour}:${selMin}`;
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('click', () => {
+  document.getElementById('timeDropdown').classList.remove('show');
+});
+
 function openPopup() {
   if (!selectedDate) return;
   const [y,m,d] = selectedDate.split('-');
   document.getElementById('popupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
   document.getElementById('inTitle').value = '';
-  document.getElementById('inTime').value  = '';
+  selHour = '12'; selMin = '00';
+  initCustomTimePicker();
   document.getElementById('overlay').classList.add('show');
 }
 function closePopup() { document.getElementById('overlay').classList.remove('show'); }
@@ -525,10 +601,13 @@ function renderCal() {
     if (evs.length)         cls += ' has-event';
     if (ds === selectedDate) cls += ' selected';
 
+    /* 저장된 하트 색상 실시간 연동 강화 */
     const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
     const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
     const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
     const tipExtra = holiday ? ` data-holiday="${HOLIDAYS[ds]}"` : '';
+    
+    // 이 부분이 핵심입니다: 이벤트가 등록되어 있으면 사용자가 지정한 하트 컬러 변수를 인라인 CSS 스타일로 심어줍니다.
     const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
 
     html += `<div class="${cls}" data-date="${ds}"${tipExtra} onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="hideTip()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
@@ -557,28 +636,17 @@ document.addEventListener('mousemove', e => { if (document.getElementById('toolt
 function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
 
 function addEvent() {
-  const time = document.getElementById('inTime').value; const title = document.getElementById('inTitle').value.trim();
+  const time = `${selHour}:${selMin}`; // 커스텀 셀렉터 값 저장
+  const title = document.getElementById('inTitle').value.trim();
   let cat = pickedCat === '__custom__' ? document.getElementById('catCustom').value.trim() : pickedCat;
   if (!title) { alert('일정 내용을 입력해주세요!'); return; }
+  
   localEvents.push({ date: selectedDate, time, title, cat, color: pickedColor, source: 'local' });
-  saveLocal(); closePopup(); renderCal();
-}
-function doRefresh() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); btn.addEventListener('animationend', () => btn.classList.remove('spinning'), { once: true }); fetchNotion(); }
-
-async function fetchNotion() {
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514", max_tokens: 1000,
-        system: `Use Notion MCP to query db "2020bfb4-f307-8153-a0cc-d4c90815d4f1".`,
-        messages: [{ role: "user", content: "Notion 일정 JSON 반환." }]
-      })
-    });
-    // 백엔드 에러가 나더라도 달력 렌더링을 방해하지 않도록 감싸둠
-  } catch(e) { console.log('Notion fetch skipped in preview'); }
+  saveLocal(); 
+  closePopup(); 
   renderCal();
 }
+function doRefresh() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); btn.addEventListener('animationend', () => btn.classList.remove('spinning'), { once: true }); renderCal(); }
 
 selectedDate = fmtDate(today);
 renderCal();
