@@ -43,7 +43,7 @@ body {
   padding: 28px 12px;
 }
 
-/* ── 위젯 카드 (섀도우 완전 제거) ── */
+/* ── 위젯 카드 ── */
 .widget {
   width: 320px;
   background: var(--cream);
@@ -71,14 +71,14 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
-  justify-content: center; /* 중앙 정렬 유지 */
+  justify-content: center; /* 화살표와 월 표시 정중앙 정렬 */
   position: relative;
   z-index: 1;
 }
 .nav-group {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px; /* 하단 바와 유사한 촘촘한 정렬 간격 */
 }
 .nav-btn {
   width: 26px; height: 26px;
@@ -94,10 +94,8 @@ body {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.45); }
 
-/* 오늘로 가기 하트 버튼 (오른쪽 끝 배치) */
+/* [수정] 오른쪽 화살표 옆에 예쁜 간격으로 붙은 하트 버튼 */
 .nav-heart-btn {
-  position: absolute;
-  right: 0;
   width: 26px; height: 26px;
   border-radius: 50%;
   background: rgba(255,255,255,0.3);
@@ -142,7 +140,13 @@ body {
   border-radius: 10px;
   transition: background 0.12s;
 }
+
+/* 마우스 올렸을 때 핑크색 채움 효과 */
 .day-cell:hover { background: var(--pink-soft); }
+
+/* [수정] 날짜를 클릭했을 때도 하트 대신 마우스 올린 것처럼 핑크색 색 채움으로 표시 */
+.day-cell.selected { background: var(--pink-soft); }
+
 .day-num {
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
@@ -164,24 +168,7 @@ body {
   border-radius: 50%;
 }
 
-/* 선택된 날짜 (연한 핑크 하트) */
-.day-cell.selected:not(.has-event) .day-num {
-  color: #ff7eb3 !important;
-  font-weight: 900;
-}
-.day-cell.selected:not(.has-event) .day-num::before {
-  content: '❤';
-  position: absolute;
-  font-size: 32px;
-  line-height: 1;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -48%);
-  color: var(--pink-soft);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* 일정이 저장된 날짜 하트 스타일 (핑크색 글씨 및 투명도 유지) */
+/* 일정이 저장된 날짜 하트 폰트 효과 */
 .day-cell.has-event .day-num {
   color: #ff7eb3 !important;
   font-weight: 900;
@@ -202,15 +189,18 @@ body {
   pointer-events: none;
 }
 
+/* [복구] 이벤트 도트 열 스타일 및 위치 재설정 */
 .event-dot-row {
   display: flex; gap: 2px;
   justify-content: center;
   margin-top: 1px;
   min-height: 5px;
+  position: relative;
+  z-index: 3;
 }
 .e-dot { width: 4px; height: 4px; border-radius: 50%; }
 
-/* 공휴일 및 대체공휴일 빨간색 강제 적용 */
+/* 공휴일 및 대체공휴일 스타일 */
 .day-cell.holiday .day-num { color: #e8392a !important; font-weight: 900; }
 .day-cell.holiday.other-month .day-num { color: var(--text-other) !important; }
 .holiday-dot { width: 4px; height: 4px; border-radius: 50%; background: #e8392a; }
@@ -355,8 +345,8 @@ body {
         <button class="nav-btn" onclick="changeMonth(-1)">←</button>
         <div class="cal-month" id="calMonth"></div>
         <button class="nav-btn" onclick="changeMonth(1)">→</button>
+        <button class="nav-heart-btn" onclick="goToday()" title="오늘 날짜로 이동">❤</button>
       </div>
-      <button class="nav-heart-btn" onclick="goToday()" title="오늘 날짜로 이동">❤</button>
     </div>
     <div class="header-wave">
       <svg viewBox="0 0 320 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -380,7 +370,7 @@ body {
   <button class="add-fab" onclick="openPopup()" title="일정 추가">+</button>
 </div>
 
-<div class="tooltip" id="tooltip" onmouseenter="clearTipTimer()" onmouseleave="startTipTimer()">
+<div class="tooltip" id="tooltip" onmouseenter="clearTipTimer()" onmouseleave="hideTip()">
   <div class="tooltip-date" id="tipDate"></div>
   <div id="tipItems"></div>
 </div>
@@ -457,7 +447,6 @@ let selMin = '00';
 let tipTimer = null;
 const today = new Date();
 
-/* ── 대한민국 관공서 공휴일 기준 데이터 (2025~2026) ── */
 const HOLIDAYS = {
   '2025-01-01': '신정', '2025-01-28': '설날 연휴', '2025-01-29': '설날', '2025-01-30': '설날 연휴',
   '2025-03-01': '삼일절', '2025-03-03': '삼일절 대체공휴일', '2025-05-05': '어린이날', '2025-06-06': '현충일',
@@ -526,7 +515,7 @@ function triggerAddFromEmpty() { closeEmptyPopup(); openPopup(); }
 
 function goToday() {
   CY = today.getFullYear(); CM = today.getMonth();
-  selectedDate = ''; // 하트 마킹 제거
+  selectedDate = ''; 
   renderCal();
 }
 
@@ -574,22 +563,24 @@ function renderCal() {
     if (isT) cls += ' today';
     if (dow===0 && !other) cls += ' sun';
     if (dow===6 && !other) cls += ' sat';
-    if (holiday) cls += ' holiday'; // 대체공휴일 텍스트 포함 시 빨간색 클래스 추가
+    if (holiday) cls += ' holiday'; 
     if (evs.length) cls += ' has-event';
     if (ds === selectedDate) cls += ' selected';
 
     const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
+    
+    /* [복구] 이벤트 도트(점) 생성 로직 구현 */
+    const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
     const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
     const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
 
-    html += `<div class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="startTipTimer()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${hDot}</div></div>`;
+    html += `<div class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="startTipTimer()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
   }
   document.getElementById('calGrid').innerHTML = html;
 }
 
 function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-/* ── 툴팁 표시 수정 (시간 & 카테고리 포함) ── */
 function showTip(e, ds) {
   clearTipTimer();
   const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
@@ -599,7 +590,6 @@ function showTip(e, ds) {
   if (holiday) inner += `<div class="tooltip-item"><div class="t-dot" style="background:#e8392a"></div><div class="t-info"><span class="t-title">${holiday}</span></div></div>`;
   
   inner += evs.map((ev, index) => {
-    // [수정] 시간과 카테고리 정보를 문자열로 조합
     const metaInfo = [ev.time, ev.cat].filter(Boolean).join(' · ');
     return `
       <div class="tooltip-item">
@@ -620,7 +610,8 @@ function showTip(e, ds) {
   tip.style.top  = (e.clientY+12+tip.offsetHeight > window.innerHeight-8 ? e.clientY-tip.offsetHeight-16 : e.clientY+12) + 'px';
 }
 
-function startTipTimer() { tipTimer = setTimeout(hideTip, 400); }
+/* [수정] 마우스가 나가면 팝업이 즉시 깔끔하게 지워지도록 타임 아웃 밀리초 조정 */
+function startTipTimer() { tipTimer = setTimeout(hideTip, 80); }
 function clearTipTimer() { if (tipTimer) clearTimeout(tipTimer); }
 function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
 
