@@ -35,7 +35,7 @@
 
 body {
   font-family: 'NanumSquareRound', 'Nanum Gothic', sans-serif;
-  background: transparent; /* 외부 배경색 투명화 */
+  background: transparent; /* 배경 투명 유지 */
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
@@ -43,15 +43,13 @@ body {
   padding: 28px 12px;
 }
 
-/* ── 위젯 카드 ── */
+/* ── 위젯 카드 (섀도우 제거 상태 유지) ── */
 .widget {
   width: 320px;
   background: var(--cream);
   border-radius: 28px;
   overflow: hidden;
-  box-shadow:
-    0 4px 32px rgba(255,126,179,0.22),
-    0 0 0 1.5px rgba(255,126,179,0.13);
+  border: 1.5px solid rgba(255,126,179,0.15);
   position: relative;
   flex-shrink: 0;
 }
@@ -130,25 +128,26 @@ body {
   border-radius: 50%;
   transition: all 0.12s;
   position: relative;
+  z-index: 2;
 }
 .day-cell.other-month .day-num { color: var(--text-other); }
 .day-cell.sun .day-num  { color: #e8392a; }
 .day-cell.sat .day-num  { color: #5aabdb; }
 
-/* 오늘 */
+/* 오늘 기본 디자인 */
 .day-cell.today:not(.has-event) .day-num {
   background: #ff7eb3;
-  color: #fff;
+  color: #fff !important;
   font-weight: 900;
   border-radius: 50%;
 }
 
-/* 선택된 날짜 하트 */
-.day-cell.selected:not(.has-event):not(.today) .day-num {
+/* 단순 선택된 날짜 하트 효과 */
+.day-cell.selected:not(.has-event) .day-num {
   color: #ff7eb3 !important;
   font-weight: 900;
 }
-.day-cell.selected:not(.has-event):not(.today) .day-num::before {
+.day-cell.selected:not(.has-event) .day-num::before {
   content: '❤';
   position: absolute;
   font-size: 32px;
@@ -159,7 +158,7 @@ body {
   z-index: -1;
   pointer-events: none;
 }
-.day-cell.selected.today .day-num {
+.day-cell.selected.today:not(.has-event) .day-num {
   background: #ff7eb3;
   color: #fff !important;
   border-radius: 50%;
@@ -167,11 +166,14 @@ body {
   outline-offset: 2px;
 }
 
-/* 일정이 저장된 날짜 하트 (지정한 색상 매칭 보완) */
+/* 일정이 저장된 날짜 하트 디자인 (핑크색 글씨 및 투명도 유지) */
 .day-cell.has-event .day-num {
-  color: #fff !important;
+  color: #ff7eb3 !important;
   font-weight: 900;
 }
+.day-cell.has-event.sun .day-num { color: #e8392a !important; }
+.day-cell.has-event.sat .day-num { color: #5aabdb !important; }
+
 .day-cell.has-event .day-num::before {
   content: '❤';
   position: absolute;
@@ -179,9 +181,15 @@ body {
   line-height: 1;
   top: 50%; left: 50%;
   transform: translate(-50%, -48%);
-  color: var(--heart, #ff7eb3);
+  color: var(--heart, #ffe4f1);
+  opacity: 0.55;
   z-index: -1;
   pointer-events: none;
+}
+
+.day-cell.has-event.today .day-num {
+  outline: 2.5px solid #ff7eb3;
+  outline-offset: 2px;
 }
 
 .event-dot-row {
@@ -192,16 +200,28 @@ body {
 }
 .e-dot { width: 4px; height: 4px; border-radius: 50%; }
 
-/* 공휴일 */
-.day-cell.holiday .day-num { color: #e8392a; font-weight: 900; }
-.day-cell.holiday.other-month .day-num { color: var(--text-other); }
+/* 공휴일 및 대체공휴일 */
+.day-cell.holiday .day-num { color: #e8392a !important; font-weight: 900; }
+.day-cell.holiday.other-month .day-num { color: var(--text-other) !important; }
 .holiday-dot { width: 4px; height: 4px; border-radius: 50%; background: #e8392a; }
 
-/* 하단 바 */
+/* ── 하단 바 ── */
 .bottom-bar {
   display: flex; align-items: center; justify-content: flex-end;
   padding: 6px 14px 14px; gap: 8px;
 }
+
+/* [새로 추가] 오늘 날짜로 순간이동하는 하트 버튼 스타일 */
+.today-heart-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid rgba(255,126,179,0.35);
+  background: none; color: #ff7eb3; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.12s, background 0.12s;
+  line-height: 1;
+}
+.today-heart-btn:hover { background: var(--pink-soft); transform: scale(1.1); }
+
 .refresh-btn {
   width: 30px; height: 30px; border-radius: 50%;
   border: 1.5px solid rgba(255,126,179,0.35);
@@ -214,14 +234,14 @@ body {
 
 .add-fab {
   position: absolute;
-  bottom: 13px; right: 52px;
+  bottom: 13px; right: 88px; /* 하트 버튼 추가에 따른 간격 보정 */
   width: 30px; height: 30px;
   border-radius: 50%;
   background: #ff7eb3;
   border: none; color: #fff;
   font-size: 20px; font-weight: 300; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(255,126,179,0.35);
+  box-shadow: 0 2px 8px rgba(255,126,179,0.25);
   transition: transform 0.15s;
 }
 .add-fab:hover { transform: scale(1.1); }
@@ -230,7 +250,7 @@ body {
 .tooltip {
   display: none; position: fixed; z-index: 9999;
   background: #fff; border-radius: 14px; padding: 10px 14px;
-  box-shadow: 0 6px 24px rgba(255,126,179,0.2);
+  box-shadow: 0 6px 24px rgba(255,126,179,0.15);
   min-width: 130px; max-width: 210px; pointer-events: none;
   border: 1.5px solid rgba(255,126,179,0.2);
 }
@@ -260,13 +280,12 @@ body {
   }
 }
 
-/* 일정 등록 팝업 카드 */
 .popup {
   width: 300px;
   background: var(--cream);
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(255,126,179,0.3);
+  box-shadow: 0 8px 40px rgba(255,126,179,0.2);
   animation: popIn 0.25s ease-out;
 }
 @keyframes popIn {
@@ -289,12 +308,12 @@ body {
 }
 .popup-body input:focus { border-color: var(--pink); }
 
-/* ── [새로 구현] 러블리 핑크 커스텀 시간 선택기 스타일 ── */
+/* 커스텀 시간 선택기 */
 .time-picker-box {
   width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; color: var(--text); background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
 }
 .time-dropdown {
-  display: none; position: absolute; top: 52px; left: 18px; right: 18px; background: #fff; border: 1.5px solid var(--pink); border-radius: 14px; box-shadow: 0 6px 20px rgba(255,126,179,0.25); z-index: 10; padding: 8px; gap: 8px; grid-template-columns: 1fr 1fr;
+  display: none; position: absolute; top: 52px; left: 18px; right: 18px; background: #fff; border: 1.5px solid var(--pink); border-radius: 14px; box-shadow: 0 6px 20px rgba(255,126,179,0.2); z-index: 10; padding: 8px; gap: 8px; grid-template-columns: 1fr 1fr;
 }
 .time-dropdown.show { display: grid; }
 .time-scroll-col {
@@ -332,7 +351,7 @@ body {
 }
 .empty-overlay.show { display: flex; }
 .empty-popup {
-  width: 250px; background: #fff; border-radius: 20px; padding: 24px 20px; text-align: center; box-shadow: 0 10px 30px rgba(180,60,130,0.15); border: 1.5px solid rgba(255,126,179,0.15); animation: centerPop 0.18s ease-out;
+  width: 250px; background: #fff; border-radius: 20px; padding: 24px 20px; text-align: center; box-shadow: 0 10px 30px rgba(180,60,130,0.1); border: 1.5px solid rgba(255,126,179,0.15); animation: centerPop 0.18s ease-out;
 }
 @keyframes centerPop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .empty-msg { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
@@ -364,6 +383,7 @@ body {
   <div class="cal-grid" id="calGrid"></div>
 
   <div class="bottom-bar">
+    <button class="today-heart-btn" onclick="goToday()" title="오늘 날짜로 이동">❤</button>
     <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()" title="새로고침">↻</button>
   </div>
 
@@ -466,7 +486,6 @@ function pickCat(el) {
   pickedCat === '__custom__' ? ci.classList.add('show') : ci.classList.remove('show');
 }
 
-/* ── 커스텀 시간 드롭다운 로직 ── */
 function initCustomTimePicker() {
   const hourCol = document.getElementById('hourCol');
   const minCol = document.getElementById('minCol');
@@ -502,14 +521,13 @@ function selectMin(m, el) {
   document.querySelectorAll('#minCol .time-cell-item').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   updateTimeDisplay();
-  document.getElementById('timeDropdown').classList.remove('show'); // 분 선택 시 자동 닫힘
+  document.getElementById('timeDropdown').classList.remove('show');
 }
 
 function updateTimeDisplay() {
   document.getElementById('timeDisplay').textContent = `${selHour}:${selMin}`;
 }
 
-// 외부 클릭 시 드롭다운 닫기
 document.addEventListener('click', () => {
   document.getElementById('timeDropdown').classList.remove('show');
 });
@@ -542,6 +560,14 @@ function triggerAddFromEmpty() {
   openPopup();
 }
 
+/* [새로 추가] 오늘 날짜 월로 돌아오는 기능 연동 */
+function goToday() {
+  CY = today.getFullYear();
+  CM = today.getMonth();
+  selectedDate = fmtDate(today); // 오늘 날짜를 하트 마킹 상태로 지정
+  renderCal();
+}
+
 let notionEvents = [];
 let localEvents  = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
 function saveLocal() { localStorage.setItem('tomato_v4', JSON.stringify(localEvents)); }
@@ -556,9 +582,10 @@ const HOLIDAYS = {
   '2025-08-15': '광복절', '2025-10-03': '개천절', '2025-10-05': '추석 연휴', '2025-10-06': '추석',
   '2025-10-07': '추석 연휴', '2025-10-08': '대체공휴일', '2025-10-09': '한글날', '2025-12-25': '크리스마스',
   '2026-01-01': '신정', '2026-01-28': '설날 연휴', '2026-01-29': '설날', '2026-01-30': '설날 연휴',
-  '2026-03-01': '삼일절', '2026-05-05': '어린이날', '2026-05-24': '부처님오신날', '2026-06-06': '현충일',
-  '2026-08-15': '광복절', '2026-09-24': '추석 연휴', '2026-09-25': '추석', '2026-09-26': '추석 연휴',
-  '2026-10-03': '개천절', '2026-10-09': '한글날', '2026-12-25': '크리스마스',
+  '2026-03-01': '삼일절', '2026-05-05': '어린이날', '2026-05-06': '대체공휴일', '2026-05-24': '부처님오신날', 
+  '2026-06-06': '현충일', '2026-08-15': '광복절', '2026-09-24': '추석 연휴', '2026-09-25': '추석', 
+  '2026-09-26': '추석 연휴', '2026-10-03': '개천절', '2026-10-05': '대체공휴일', '2026-10-09': '한글날', 
+  '2026-12-25': '크리스마스',
 };
 
 function changeMonth(d) {
@@ -601,13 +628,11 @@ function renderCal() {
     if (evs.length)         cls += ' has-event';
     if (ds === selectedDate) cls += ' selected';
 
-    /* 저장된 하트 색상 실시간 연동 강화 */
     const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
     const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
     const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
     const tipExtra = holiday ? ` data-holiday="${HOLIDAYS[ds]}"` : '';
     
-    // 이 부분이 핵심입니다: 이벤트가 등록되어 있으면 사용자가 지정한 하트 컬러 변수를 인라인 CSS 스타일로 심어줍니다.
     const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
 
     html += `<div class="${cls}" data-date="${ds}"${tipExtra} onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="hideTip()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
@@ -636,7 +661,7 @@ document.addEventListener('mousemove', e => { if (document.getElementById('toolt
 function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
 
 function addEvent() {
-  const time = `${selHour}:${selMin}`; // 커스텀 셀렉터 값 저장
+  const time = `${selHour}:${selMin}`;
   const title = document.getElementById('inTitle').value.trim();
   let cat = pickedCat === '__custom__' ? document.getElementById('catCustom').value.trim() : pickedCat;
   if (!title) { alert('일정 내용을 입력해주세요!'); return; }
