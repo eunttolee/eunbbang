@@ -25,7 +25,7 @@
   --pink-mid:  #ffc6e0;
   --pink-soft: #ffe4f1;
   --lilac:     #d9a8ff;
-  --yellow:    --ffe066;
+  --yellow:    #ffe066;
   --mint:      #7eecd4;
   --text:      #3a1a2e;
   --text-sub:  #c47fa0;
@@ -54,12 +54,14 @@ body {
   flex-shrink: 0;
 }
 
-/* ── 헤더 (완벽한 중앙 정렬 구조로 개편) ── */
+/* ── 헤더 (완벽한 구조적 중앙 정렬 배정) ── */
 .cal-header {
   background: #ff7eb3;
-  padding: 16px 18px 26px;
+  padding: 16px 10px 26px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: center; /* 헤더 영역 자체에서 가로 중앙 정렬 */
 }
 .header-wave {
   position: absolute;
@@ -68,20 +70,14 @@ body {
 }
 .header-wave svg { display: block; width: 100%; }
 
+/* [개편] 버튼셋 전체가 한 덩어리로 묶여 절대 삐뚤어지지 않는 핵심 틀 */
 .header-nav {
   display: flex;
   align-items: center;
-  justify-content: center; /* 부모 요소를 정중앙 정렬 */
+  justify-content: center;
+  gap: 8px;
   position: relative;
-  width: 100%;
   z-index: 1;
-}
-.nav-group {
-  display: flex;
-  align-items: center;
-  position: relative;
-  /* 화살표 세트 좌우 대칭 균형을 맞추기 위해 하트 버튼 너비만큼 왼쪽 여백 보정 */
-  padding-right: 34px; 
 }
 .nav-btn {
   width: 26px; height: 26px;
@@ -97,10 +93,8 @@ body {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.45); }
 
-/* 오른쪽 화살표 우측에 자연스러운 간격으로 나란히 배치 */
+/* 화살표 옆에 일정한 간격으로 나란히 정렬되는 오늘 이동 하트 */
 .nav-heart-btn {
-  position: absolute;
-  right: 0; /* nav-group 내부의 오른쪽 끝에 고정 배치 */
   width: 26px; height: 26px;
   border-radius: 50%;
   background: rgba(255,255,255,0.3);
@@ -110,12 +104,13 @@ body {
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.12s, background 0.12s;
+  line-height: 1;
 }
 .nav-heart-btn:hover { background: rgba(255,255,255,0.5); transform: scale(1.1); }
 
 .cal-month {
   font-size: 18px; font-weight: 900; color: #fff;
-  min-width: 110px; text-align: center;
+  min-width: 95px; text-align: center;
   text-shadow: 0 1px 4px rgba(180,60,130,0.2);
   letter-spacing: 0.5px;
 }
@@ -160,7 +155,7 @@ body {
 .day-cell.sun .day-num  { color: #e8392a; }
 .day-cell.sat .day-num  { color: #5aabdb; }
 
-/* 오늘 */
+/* 오늘 기본 마킹 */
 .day-cell.today:not(.has-event) .day-num {
   background: #ff7eb3;
   color: #fff !important;
@@ -258,7 +253,7 @@ body {
 .t-title { font-weight: 700; color: var(--text); }
 .t-meta { font-size: 10px; color: var(--text-sub); font-weight: 400; }
 
-/* 일정 관리 및 삭제 전용 모달 팝업 */
+/* ── 일정 관리 및 삭제 전용 모달 팝업 ── */
 .manage-overlay {
   display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.15); align-items: center; justify-content: center;
 }
@@ -267,7 +262,17 @@ body {
   width: 280px; background: #fff; border-radius: 24px; padding: 22px 18px; box-shadow: 0 12px 36px rgba(180,60,130,0.2); border: 1.5px solid rgba(255,126,179,0.2); animation: mPop 0.2s ease-out;
 }
 @keyframes mPop { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.manage-title { font-size: 14px; font-weight: 900; color: var(--text); text-align: center; margin-bottom: 4px; }
+
+/* [수정] 상단 타이틀 행에 일정 추가용 미니 플러스 버튼 탑재 */
+.manage-header-row {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding: 0 4px;
+}
+.manage-title { font-size: 14px; font-weight: 900; color: var(--text); }
+.btn-m-add-new {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--pink-soft); border: none; color: var(--pink-dark); font-size: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; transition: background 0.12s;
+}
+.btn-m-add-new:hover { background: #ff7eb3; color: #fff; }
+
 .manage-date { font-size: 11px; font-weight: 700; color: var(--text-sub); text-align: center; margin-bottom: 16px; }
 .manage-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
 .manage-item {
@@ -397,7 +402,10 @@ body {
 
 <div class="manage-overlay" id="manageOverlay" onclick="closeManageOnBg(event)">
   <div class="manage-popup">
-    <div class="manage-title">일정 관리 🍅</div>
+    <div class="manage-header-row">
+      <div style="width: 22px;"></div> <div class="manage-title">일정 관리 🍅</div>
+      <button class="btn-m-add-new" onclick="triggerAddFromManage()" title="이 날짜에 일정 바로 추가">+</button>
+    </div>
     <div class="manage-date" id="mPopupDateLabel">날짜</div>
     <div class="manage-list" id="mPopupList"></div>
     <button class="btn-m-close" onclick="closeManagePopup()">닫기</button>
@@ -460,20 +468,13 @@ body {
   </div>
 </div>
 
-<div class="empty-overlay" id="emptyOverlay" onclick="closeEmptyOnBg(event)">
-  <div class="empty-popup">
-    <div class="empty-msg">아직 등록된 일정이 없어요 🍅</div>
-    <button class="btn-go-add" onclick="triggerAddFromEmpty()">일정 추가</button>
-  </div>
-</div>
-
 <script>
 let pickedColor = '#ff7eb3';
 let pickedCat   = '약속';
 let selectedDate = '';
 let selHour = '12';
 let selMin = '00';
-let tipTimer = null;
+let isManageOpen = false; // [추가] 관리 모달 활성화 감지 상태값
 const today = new Date();
 
 const HOLIDAYS = {
@@ -554,6 +555,8 @@ function closeEmptyOnBg(e) { if (e.target === document.getElementById('emptyOver
 function triggerAddFromEmpty() { closeEmptyPopup(); openPopup(); }
 
 function openManagePopup(date) {
+  isManageOpen = true; // 관리 팝업이 활성화되었으므로 호버 창 차단 유도
+  hideTip(); // 켜져 있던 툴팁 즉시 강제 소멸
   const [y,m,d] = date.split('-');
   document.getElementById('mPopupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
   
@@ -577,13 +580,20 @@ function openManagePopup(date) {
   listContainer.innerHTML = html;
   document.getElementById('manageOverlay').classList.add('show');
 }
-// 하트 버튼 클릭 유도 시 선택 마킹 초기화 상태 유지
 function closeManagePopup() {
+  isManageOpen = false; // 해제
   document.getElementById('manageOverlay').classList.remove('show');
 }
 function closeManageOnBg(e) {
   if (e.target === document.getElementById('manageOverlay')) closeManagePopup();
 }
+
+/* [추가] 관리 모달 내 상단 '+' 아이콘 클릭 시 일정 입력 연동 구조 */
+function triggerAddFromManage() {
+  closeManagePopup();
+  openPopup();
+}
+
 function deleteEventM(index, date) {
   const evs = eventsFor(date);
   const target = evs[index];
@@ -658,6 +668,8 @@ function renderCal() {
 function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
 function showTip(e, ds) {
+  if (isManageOpen) return; // [수정] 일정 관리 팝업이 떠있을 때는 호버 창 전면 차단
+  
   const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
   if (!evs.length && !holiday) return;
   document.getElementById('tipDate').textContent = `${ds.split('-')[0]}년 ${+ds.split('-')[1]}월 ${+ds.split('-')[2]}일`;
