@@ -237,4 +237,351 @@ body {
 .tooltip.show { display: block; }
 .tooltip-date { font-size: 10px; font-weight: 900; color: var(--pink-dark); margin-bottom: 6px; }
 .tooltip-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; color: var(--text); padding: 2px 0; }
-.t-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top:
+.t-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+.t-info { display: flex; flex-direction: column; gap: 1px; }
+.t-title { font-weight: 700; }
+.t-meta { font-size: 10px; color: var(--text-sub); }
+
+/* ── 팝업 오버레이 (노션 가로 너비에 맞춰 유연하게 조정) ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(180,60,130,0.03);
+  backdrop-filter: blur(1px);
+  align-items: center; 
+  justify-content: center;
+}
+.overlay.show { display: flex; }
+
+/* 캘린더 우측 배치를 위한 컨테이너 정렬 조건 보완 */
+@media (min-width: 660px) {
+  .overlay {
+    justify-content: flex-start;
+    padding-left: 350px;
+  }
+}
+
+/* 일정 등록 팝업 카드 */
+.popup {
+  width: 300px;
+  background: var(--cream);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(255,126,179,0.3);
+  animation: popIn 0.25s ease-out;
+}
+@keyframes popIn {
+  from { transform: translateX(15px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.popup-header {
+  background: #ff7eb3; padding: 16px 18px 22px; position: relative; overflow: hidden;
+}
+.popup-wave { position: absolute; bottom: 0; left: 0; right: 0; line-height: 0; }
+.popup-wave svg { display: block; width: 100%; }
+.popup-title { font-size: 15px; font-weight: 900; color: #fff; text-align: center; letter-spacing: 1.5px; position: relative; z-index: 1; }
+.popup-date-label { text-align: center; font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.9); margin-top: 4px; position: relative; z-index: 1; }
+
+.popup-body { padding: 16px 18px 20px; }
+.popup-body label { font-size: 11px; font-weight: 700; color: var(--text-sub); display: block; margin: 10px 0 4px; }
+.popup-body input[type="time"], .popup-body input[type="text"] {
+  width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; font-family: inherit; color: var(--text); outline: none; background: #fff;
+}
+.popup-body input:focus { border-color: var(--pink); }
+
+.cat-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+.cat-chip { padding: 4px 11px; border-radius: 99px; font-size: 11px; font-weight: 700; border: 1.5px solid rgba(255,126,179,0.25); background: #fff; color: var(--text-sub); cursor: pointer; font-family: inherit; }
+.cat-chip.on { background: #ff7eb3; color: #fff; border-color: #ff7eb3; }
+.cat-custom-input { display: none; width: 100%; border: 1.5px solid rgba(255,126,179,0.25); border-radius: 10px; padding: 8px 11px; font-size: 12px; font-family: inherit; margin-top: 5px; outline: none; }
+.cat-custom-input.show { display: block; }
+
+.color-row { display: flex; gap: 7px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.1); position: relative; }
+.swatch.on { border-color: var(--text); }
+.swatch.on::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 900; }
+.color-sep { width: 1px; height: 20px; background: rgba(255,126,179,0.15); }
+.custom-color-wrap { display: flex; align-items: center; gap: 5px; }
+.custom-color-wrap input[type="color"] { width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,126,179,0.3); cursor: pointer; padding: 0; background: none; }
+
+.popup-btns { display: flex; gap: 8px; margin-top: 16px; }
+.btn-cancel { flex: 1; padding: 9px; background: var(--pink-soft); color: var(--pink-dark); border: none; border-radius: 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.btn-save { flex: 2; padding: 9px; background: #ff7eb3; color: #fff; border: none; border-radius: 11px; font-size: 12px; font-weight: 900; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(255,126,179,0.3); }
+
+/* 빈 날짜 클릭 시 중앙 팝업 */
+.empty-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.12); align-items: center; justify-content: center;
+}
+.empty-overlay.show { display: flex; }
+.empty-popup {
+  width: 250px; background: #fff; border-radius: 20px; padding: 24px 20px; text-align: center; box-shadow: 0 10px 30px rgba(180,60,130,0.15); border: 1.5px solid rgba(255,126,179,0.15); animation: centerPop 0.18s ease-out;
+}
+@keyframes centerPop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.empty-msg { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.btn-go-add { width: 100%; padding: 10px; background: #ff7eb3; color: #fff; border: none; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer; font-family: inherit; box-shadow: 0 3px 10px rgba(255,126,179,0.3); }
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="cal-header">
+    <div class="header-nav">
+      <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+      <div class="cal-month" id="calMonth"></div>
+      <button class="nav-btn" onclick="changeMonth(1)">→</button>
+    </div>
+    <div class="header-wave">
+      <svg viewBox="0 0 320 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,8 Q10,0 20,8 Q30,16 40,8 Q50,0 60,8 Q70,16 80,8 Q90,0 100,8 Q110,16 120,8 Q130,0 140,8 Q150,16 160,8 Q170,0 180,8 Q190,16 200,8 Q210,0 220,8 Q230,16 240,8 Q250,0 260,8 Q270,16 280,8 Q290,0 300,8 Q310,16 320,8 L320,22 L0,22 Z" fill="#fff7fc"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="weekdays">
+    <div class="wd sun">일</div><div class="wd">월</div><div class="wd">화</div>
+    <div class="wd">수</div><div class="wd">목</div><div class="wd">금</div>
+    <div class="wd sat">토</div>
+  </div>
+
+  <div class="cal-grid" id="calGrid"></div>
+
+  <div class="bottom-bar">
+    <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()" title="새로고침">↻</button>
+  </div>
+
+  <button class="add-fab" onclick="openPopup()" title="일정 추가">+</button>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-date" id="tipDate"></div>
+  <div id="tipItems"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeOnBg(event)">
+  <div class="popup" id="popup">
+    <div class="popup-header">
+      <div class="popup-title">일정 추가</div>
+      <div class="popup-date-label" id="popupDateLabel">날짜를 선택해주세요</div>
+      <div class="popup-wave">
+        <svg viewBox="0 0 300 18" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,6 Q7.5,0 15,6 Q22.5,12 30,6 Q37.5,0 45,6 Q52.5,12 60,6 Q77.5,0 75,6 Q82.5,12 90,6 Q97.5,0 105,6 Q112.5,12 120,6 Q127.5,0 135,6 Q142.5,12 150,6 Q157.5,0 165,6 Q172.5,12 180,6 Q187.5,0 195,6 Q202.5,12 210,6 Q217.5,0 225,6 Q232.5,12 240,6 Q247.5,0 255,6 Q262.5,12 270,6 Q277.5,0 285,6 Q292.5,12 300,6 L300,18 L0,18 Z" fill="#fff7fc"/>
+        </svg>
+      </div>
+    </div>
+    <div class="popup-body">
+      <label>시간</label>
+      <input type="time" id="inTime">
+
+      <label>일정 내용</label>
+      <input type="text" id="inTitle" placeholder="무슨 일정인가요?">
+
+      <label>카테고리</label>
+      <div class="cat-row">
+        <button class="cat-chip on" data-cat="약속" onclick="pickCat(this)">약속</button>
+        <button class="cat-chip" data-cat="업무" onclick="pickCat(this)">업무</button>
+        <button class="cat-chip" data-cat="운동" onclick="pickCat(this)">운동</button>
+        <button class="cat-chip" data-cat="취미" onclick="pickCat(this)">취미</button>
+        <button class="cat-chip" data-cat="휴식" onclick="pickCat(this)">휴식</button>
+        <button class="cat-chip" data-cat="__custom__" onclick="pickCat(this)">직접 입력</button>
+      </div>
+      <input type="text" class="cat-custom-input" id="catCustom" placeholder="카테고리 이름">
+
+      <label>색상</label>
+      <div class="color-row">
+        <div class="swatch on" style="background:#ff7eb3" data-color="#ff7eb3" onclick="pickColor(this)"></div>
+        <div class="swatch" style="background:#d97aff" data-color="#d97aff" onclick="pickColor(this)"></div>
+        <div class="swatch" style="background:#ffe066" data-color="#ffe066" onclick="pickColor(this)"></div>
+        <div class="swatch" style="background:#7eecd4" data-color="#7eecd4" onclick="pickColor(this)"></div>
+        <div class="swatch" style="background:#ff9a7a" data-color="#ff9a7a" onclick="pickColor(this)"></div>
+        <div class="color-sep"></div>
+        <div class="custom-color-wrap">
+          <input type="color" id="customColor" value="#ff7eb3" oninput="pickCustomColor(this)">
+          <span>직접</span>
+        </div>
+      </div>
+
+      <div class="popup-btns">
+        <button class="btn-cancel" onclick="closePopup()">취소</button>
+        <button class="btn-save" onclick="addEvent()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="empty-overlay" id="emptyOverlay" onclick="closeEmptyOnBg(event)">
+  <div class="empty-popup">
+    <div class="empty-msg">아직 등록된 일정이 없어요 🍅</div>
+    <button class="btn-go-add" onclick="triggerAddFromEmpty()">일정 추가</button>
+  </div>
+</div>
+
+<script>
+let pickedColor = '#ff7eb3';
+let pickedCat   = '약속';
+let selectedDate = '';
+const today = new Date();
+
+function pickColor(el) {
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+  el.classList.add('on');
+  pickedColor = el.dataset.color;
+  document.getElementById('customColor').value = pickedColor;
+}
+function pickCustomColor(el) {
+  pickedColor = el.value;
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+}
+function pickCat(el) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  pickedCat = el.dataset.cat;
+  const ci = document.getElementById('catCustom');
+  pickedCat === '__custom__' ? ci.classList.add('show') : ci.classList.remove('show');
+}
+
+function openPopup() {
+  if (!selectedDate) return;
+  const [y,m,d] = selectedDate.split('-');
+  document.getElementById('popupDateLabel').textContent = `${y}년 ${+m}월 ${+d}일`;
+  document.getElementById('inTitle').value = '';
+  document.getElementById('inTime').value  = '';
+  document.getElementById('overlay').classList.add('show');
+}
+function closePopup() { document.getElementById('overlay').classList.remove('show'); }
+function closeOnBg(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
+
+function selectDate(ds) {
+  selectedDate = ds;
+  renderCal();
+  
+  const evs = eventsFor(ds);
+  if (evs.length === 0) {
+    document.getElementById('emptyOverlay').classList.add('show');
+  }
+}
+function closeEmptyPopup() { document.getElementById('emptyOverlay').classList.remove('show'); }
+function closeEmptyOnBg(e) { if (e.target === document.getElementById('emptyOverlay')) closeEmptyPopup(); }
+function triggerAddFromEmpty() {
+  closeEmptyPopup();
+  openPopup();
+}
+
+let notionEvents = [];
+let localEvents  = JSON.parse(localStorage.getItem('tomato_v4') || '[]');
+function saveLocal() { localStorage.setItem('tomato_v4', JSON.stringify(localEvents)); }
+function eventsFor(d) { return [...notionEvents, ...localEvents].filter(e => e.date === d); }
+
+let CY = today.getFullYear(), CM = today.getMonth();
+const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const HOLIDAYS = {
+  '2025-01-01': '신정', '2025-01-28': '설날 연휴', '2025-01-29': '설날', '2025-01-30': '설날 연휴',
+  '2025-03-01': '삼일절', '2025-05-05': '어린이날', '2025-05-06': '대체공휴일', '2025-06-06': '현충일',
+  '2025-08-15': '광복절', '2025-10-03': '개천절', '2025-10-05': '추석 연휴', '2025-10-06': '추석',
+  '2025-10-07': '추석 연휴', '2025-10-08': '대체공휴일', '2025-10-09': '한글날', '2025-12-25': '크리스마스',
+  '2026-01-01': '신정', '2026-01-28': '설날 연휴', '2026-01-29': '설날', '2026-01-30': '설날 연휴',
+  '2026-03-01': '삼일절', '2026-05-05': '어린이날', '2026-05-24': '부처님오신날', '2026-06-06': '현충일',
+  '2026-08-15': '광복절', '2026-09-24': '추석 연휴', '2026-09-25': '추석', '2026-09-26': '추석 연휴',
+  '2026-10-03': '개천절', '2026-10-09': '한글날', '2026-12-25': '크리스마스',
+};
+
+function changeMonth(d) {
+  CM += d;
+  if (CM > 11) { CM = 0; CY++; }
+  if (CM < 0)  { CM = 11; CY--; }
+  renderCal();
+}
+
+function renderCal() {
+  document.getElementById('calMonth').textContent = EN_MONTHS[CM];
+  const firstDay    = new Date(CY, CM, 1).getDay();
+  const daysInMonth = new Date(CY, CM+1, 0).getDate();
+  const daysInPrev  = new Date(CY, CM, 0).getDate();
+  const todayStr    = fmtDate(today);
+  const total       = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+  let html = '';
+  for (let i = 0; i < total; i++) {
+    let day, mo, yr, other = false;
+    if (i < firstDay) {
+      day = daysInPrev - firstDay + i + 1; mo = CM===0?11:CM-1; yr = CM===0?CY-1:CY; other = true;
+    } else if (i >= firstDay + daysInMonth) {
+      day = i - firstDay - daysInMonth + 1; mo = CM===11?0:CM+1; yr = CM===11?CY+1:CY; other = true;
+    } else {
+      day = i - firstDay + 1; mo = CM; yr = CY;
+    }
+    const ds       = fmtDate(new Date(yr, mo, day));
+    const evs      = other ? [] : eventsFor(ds);
+    const isT      = ds === todayStr;
+    const dow      = i % 7;
+    const holiday  = !other && HOLIDAYS[ds];
+
+    let cls = 'day-cell';
+    if (other)              cls += ' other-month';
+    if (isT)                cls += ' today';
+    if (dow===0 && !other)  cls += ' sun';
+    if (dow===6 && !other)  cls += ' sat';
+    if (holiday)            cls += ' holiday';
+    if (evs.length)         cls += ' has-event';
+    if (ds === selectedDate) cls += ' selected';
+
+    const heartColor = evs.length ? (evs[0].color || '#ff7eb3') : '#ff7eb3';
+    const dots = evs.slice(0,3).map(e => `<div class="e-dot" style="background:${e.color||'#ff7eb3'}"></div>`).join('');
+    const hDot = holiday && !evs.length ? `<div class="holiday-dot"></div>` : '';
+    const tipExtra = holiday ? ` data-holiday="${HOLIDAYS[ds]}"` : '';
+    const heartStyle = (evs.length || isT) ? `--heart:${evs.length ? heartColor : 'var(--pink-mid)'};` : '';
+
+    html += `<div class="${cls}" data-date="${ds}"${tipExtra} onclick="selectDate('${ds}')" onmouseenter="showTip(event,'${ds}')" onmouseleave="hideTip()"><div class="day-num" style="${heartStyle}">${day}</div><div class="event-dot-row">${dots}${hDot}</div></div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+function showTip(e, ds) {
+  const evs = eventsFor(ds); const holiday = HOLIDAYS[ds];
+  if (!evs.length && !holiday) return;
+  document.getElementById('tipDate').textContent = `${ds.split('-')[0]}년 ${+ds.split('-')[1]}월 ${+ds.split('-')[2]}일`;
+  let inner = '';
+  if (holiday) inner += `<div class="tooltip-item"><div class="t-dot" style="background:#e8392a"></div><div class="t-info"><span class="t-title">${holiday}</span></div></div>`;
+  inner += evs.map(ev => `<div class="tooltip-item"><div class="t-dot" style="background:${ev.color||'#ff7eb3'}"></div><div class="t-info"><span class="t-title">${ev.title}</span></div></div>`).join('');
+  document.getElementById('tipItems').innerHTML = inner;
+  document.getElementById('tooltip').classList.add('show'); moveTip(e);
+}
+function moveTip(e) {
+  const tip = document.getElementById('tooltip');
+  tip.style.left = (e.clientX+12+tip.offsetWidth > window.innerWidth-8 ? e.clientX-tip.offsetWidth-16 : e.clientX+12) + 'px';
+  tip.style.top  = (e.clientY+12+tip.offsetHeight > window.innerHeight-8 ? e.clientY-tip.offsetHeight-16 : e.clientY+12) + 'px';
+}
+document.addEventListener('mousemove', e => { if (document.getElementById('tooltip').classList.contains('show')) moveTip(e); });
+function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
+
+function addEvent() {
+  const time = document.getElementById('inTime').value; const title = document.getElementById('inTitle').value.trim();
+  let cat = pickedCat === '__custom__' ? document.getElementById('catCustom').value.trim() : pickedCat;
+  if (!title) { alert('일정 내용을 입력해주세요!'); return; }
+  localEvents.push({ date: selectedDate, time, title, cat, color: pickedColor, source: 'local' });
+  saveLocal(); closePopup(); renderCal();
+}
+function doRefresh() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spinning'); btn.addEventListener('animationend', () => btn.classList.remove('spinning'), { once: true }); fetchNotion(); }
+
+async function fetchNotion() {
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514", max_tokens: 1000,
+        system: `Use Notion MCP to query db "2020bfb4-f307-8153-a0cc-d4c90815d4f1".`,
+        messages: [{ role: "user", content: "Notion 일정 JSON 반환." }]
+      })
+    });
+    // 백엔드 에러가 나더라도 달력 렌더링을 방해하지 않도록 감싸둠
+  } catch(e) { console.log('Notion fetch skipped in preview'); }
+  renderCal();
+}
+
+selectedDate = fmtDate(today);
+renderCal();
+</script>
+</body>
+</html>
