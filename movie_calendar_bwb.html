@@ -500,7 +500,7 @@ function getDateRange(start, end) {
 function getBooksForDate(dateStr) {
   return allBooks.filter(b => 
     (b.finishDates && b.finishDates.includes(dateStr)) ||
-    b.startDate === dateStr
+    false
   );
 }
 
