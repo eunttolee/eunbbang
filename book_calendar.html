@@ -380,8 +380,10 @@ body {
   font-weight: 700;
   margin-top: 4px;
 }
-.popup-tag.finish { background: var(--red-pale); color: var(--red); }
-.popup-tag.reading { background: var(--red-pale); color: var(--red); }
+.popup-tag.finish { background: #ffe0e0; color: #e53935; }
+.popup-tag.reading { background: #fff3e0; color: #ef6c00; }
+.popup-tag.wish { background: #e8f5e9; color: #388e3c; }
+.popup-tag.drop { background: #f3e5f5; color: #7b1fa2; }
 </style>
 </head>
 <body>
@@ -584,9 +586,16 @@ function showPopup(dateStr) {
 
   let html = '';
   books.forEach(b => {
-    const isFinish = b.finishDate === dateStr;
-    const tagLabel = isFinish ? '완독' : '시작';
-    const tagClass = isFinish ? 'finish' : 'reading';
+    const statusMap = {
+      '완독': { label: '완독', cls: 'finish' },
+      '읽는 중': { label: '읽는 중', cls: 'reading' },
+      '읽기 전': { label: '읽기 전', cls: 'wish' },
+      '하차': { label: '하차', cls: 'drop' },
+      'wish': { label: 'wish', cls: 'wish' },
+    };
+    const tag = statusMap[b.status] || { label: b.status || '?', cls: 'reading' };
+    const tagLabel = tag.label;
+    const tagClass = tag.cls;
     html += `<div class="popup-book">
       ${b.coverUrl
         ? `<img class="popup-cover" src="${b.coverUrl}" alt="${b.title}">`
